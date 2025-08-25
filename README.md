@@ -644,7 +644,7 @@ If you use this package in your research, please cite:
   title={ClampFixedRodSolver.jl: A Julia Package for Clamped-Pinned Rod Inverse Kinematics},
   author={Ruiz-Erezuma, José Luis},
   year={2025},
-  url={https://github.com/jruiz125/Clamped-pinned-Rod-UDE}
+  url={https://github.com/jruiz125/Clamped-Pinned-Rod-Solver}
 }
 ```
 
