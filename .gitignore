@@ -1,0 +1,60 @@
+# Julia package files
+Manifest.toml
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+deps/deps.jl
+
+# MATLAB files
+*.asv
+*.m~
+*.mexa64
+*.mexmaci64
+*.mexw32
+*.mexw64
+
+# Temporary and cache files
+*.tmp
+*~
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data files (large datasets)
+*.mat
+*.jld2
+*.h5
+*.hdf5
+
+# Results and output
+results/
+output/
+plots/
+figures/
+*.png
+*.jpg
+*.pdf
+*.eps
+
+# System files
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+# Backup files
+*backup*
+*Backup*
+*copy*
+*Copy*
+*_old*
+*_OLD*
+
+# Project specific
+*.prj
+*.zip
+*.lnk
