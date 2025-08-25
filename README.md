@@ -582,7 +582,7 @@ include("test/example_usage.jl")
 
 ### Solvers
 
-- `elliptical_rod_solver(config)`: Solve elliptical rod inverse kinematics
+- `elliptical_rod_solver(config)`: Solve rod inverse kinematics
 - `clamp_fixed_rod_solver(config)`: Generate rotated clamp datasets
 
 ### Utilities
