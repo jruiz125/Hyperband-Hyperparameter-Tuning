@@ -640,8 +640,8 @@ The `ClampedRodConfig` structure includes:
 If you use this package in your research, please cite:
 
 ```bibtex
-@software{ruiz2025ellipticalrodsolver,
-  title={EllipticalRodSolver.jl: A Julia Package for Clamped-Pinned Rod Inverse Kinematics},
+@software{ruiz2025clampfixedrodsolver,
+  title={ClampFixedRodSolver.jl: A Julia Package for Clamped-Pinned Rod Inverse Kinematics},
   author={Ruiz-Erezuma, José Luis},
   year={2025},
   url={https://github.com/jruiz125/Clamped-pinned-Rod-UDE}
