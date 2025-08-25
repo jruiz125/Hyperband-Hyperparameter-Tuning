@@ -1,5 +1,7 @@
 # ClampFixedRodSolver.jl
 
+![Rotation Example](figures/rotation_example.png)
+
 A comprehensive Julia package for solving the inverse kinematics of clamped-pinned rods using numerical methods.
 
 ## Overview
