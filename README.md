@@ -5,9 +5,9 @@ A comprehensive Julia package for solving the inverse kinematics of clamped-pinn
 ## Overview
 
 This package provides computational tools for:
-- **Complete 3-Step Pipeline**: Automated end-to-end data generation workflow
-- **Elliptical Rod Solver**: Inverse kinematics using elliptical integrals
-- **Rotational Learning Data**: Generation of rotation training datasets
+- **Initial Rod Solver**: Inverse kinematics, using numerical methods, for Initial Rod shape
+- **Rotational Rod Solver**: Generation of rotation training datasets
+- **Automated Pipeline**: Automated end-to-end data generation workflow
 - **Dataset Splitting**: Automated training/testing data preparation
 - **Configuration Management**: Flexible parameter handling
 - **Advanced Logging System**: Comprehensive pipeline monitoring
@@ -19,14 +19,14 @@ This package provides computational tools for:
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/jruiz125/Clamped-pinned-Rod-UDE.git")
+Pkg.add(url="https://github.com/jruiz125/Clamped-Pinned-Rod-Solver.git")
 ```
 
 ### For Development
 
 ```bash
-git clone https://github.com/jruiz125/Clamped-pinned-Rod-UDE.git
-cd Clamped-pinned-Rod-UDE
+git clone https://github.com/jruiz125/Clamped-Pinned-Rod-Solver.git
+cd Clamped-Pinned-Rod-Solver
 julia --project=.
 ```
 
@@ -34,7 +34,7 @@ Then in Julia:
 ```julia
 using Pkg
 Pkg.instantiate()  # Install dependencies
-using EllipticalRodSolver
+using ClampFixedRodSolver
 ```
 
 ## Quick Start
@@ -219,27 +219,27 @@ The package implements a **3-step automated pipeline** for complete data generat
 Input: Configuration (xp, yp, mode, train_ratio, etc.)
     ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STEP 1: Generate Initial Rod Shape                         │
-│ • elliptical_rod_solver()                                  │
-│ • Solves inverse kinematics using elliptical integrals    │
-│ • Generates: CLampedPinnedRod_sol_X_mode_Y_ZZZ.mat        │
-│ • Creates: Initial rod shape figures                      │
+│ STEP 1: Generate Initial Rod Shape                          │
+│ • elliptical_rod_solver()                                   │
+│ • Solves inverse kinematics using numerical methods         │
+│ • Generates: CLampedPinnedRod_sol_X_mode_Y_ZZZ.mat          │
+│ • Creates: Initial rod shape figures                        │
 └─────────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STEP 2: Generate Rotation Learning Data                    │
-│ • clamp_fixed_rod_solver()                                 │
-│ • Rotates clamp through 360° (72 trajectories)            │
-│ • Generates: LearnigData_Rod_ClampedPinned_Rotated_*.mat   │
-│ • Creates: Motion analysis figures (9 plots)              │
+│ STEP 2: Generate Rotation Learning Data                     │
+│ • clamp_fixed_rod_solver()                                  │
+│ • Rotates clamp through 360° (72 trajectories)              │
+│ • Generates: LearnigData_Rod_ClampedPinned_Rotated_*.mat    │
+│ • Creates: Motion analysis figures (9 plots)                │
 └─────────────────────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STEP 3: Split Dataset for ML Training                      │
-│ • split_dataset_for_training()                            │
-│ • Splits data according to train_ratio                    │
-│ • Generates: *_train_*.jld2/.mat & *_test_*.jld2/.mat     │
-│ • Ready for machine learning workflows                    │
+│ STEP 3: Split Dataset for ML Training                       │
+│ • split_dataset_for_training()                              │
+│ • Splits data according to train_ratio                      │
+│ • Generates: *_train_*.jld2/.mat & *_test_*.jld2/.mat       │
+│ • Ready for machine learning workflows                      │
 └─────────────────────────────────────────────────────────────┘
     ↓
 Output: Ready-to-use training/testing datasets + comprehensive figures
@@ -362,26 +362,36 @@ ClampedPinnedRodSolver/
 │   └── utils/
 │       ├── project_utils.jl             # Project environment utilities
 │       ├── config.jl                    # Configuration management
-│       └── logging.jl                   # Advanced logging system
+│       ├── logging.jl                   # Advanced logging system
+│       ├── docs_for_language_server.jl  # Language server documentation
+│       └── docs/                        # Documentation utilities
+│           ├── sync_docs.jl             # Documentation synchronization
+│           ├── auto_update_docs.jl      # Automated documentation updates
+│           ├── update_docs.jl           # Documentation update utilities
+│           ├── update_docs_simple.jl    # Simple documentation updates
+│           └── README_Documentation_Sync.md # Documentation sync guide
 ├── test/
 │   ├── runtests.jl                      # Test runner
+│   ├── basic_test.jl                    # Basic functionality tests
+│   ├── example_usage.jl                 # Usage example tests
+│   ├── quick_figure_test.jl             # Figure generation tests
+│   ├── simple_config_test.jl            # Configuration tests
 │   ├── test_clamp_fixed_rod_solver.jl   # Clamp solver tests
 │   ├── test_elliptical_rod_solver.jl    # Elliptical solver tests
 │   ├── test_figure_config.jl            # Figure configuration tests
-│   └── validate_structure.jl            # Project structure validation
+│   ├── test_utils.jl                    # Utility function tests
+│   ├── validate_structure.jl            # Project structure validation
+│   └── README.md                        # Test documentation
 ├── examples/
-│   ├── dual_mode_usage.jl               # Complete pipeline examples
-│   ├── figure_saving_examples.jl        # Figure management examples
-│   ├── max_angle_analysis.jl            # Analysis workflow example
-│   └── standalone_*_solver.jl           # Individual solver examples
+│   └── dual_mode_usage.jl               # Complete pipeline examples
 ├── dataset/                             # Generated data storage
 │   └── MATLAB code/
 │       └── Learning_Data_ClampedPinned_Rod_IK/
 │           ├── 00.-Find Initial Rod Shape/    # Step 1 outputs
 │           ├── 01.-Rotate Clamp/              # Step 2 outputs  
 │           └── 02.-Learning DataSet/          # Step 3 outputs (ML-ready)
+├── figures/                             # Generated figure outputs
 ├── logs/                                # Pipeline execution logs
-├── OLD/                                 # Archived auxiliary files
 └── resources/                           # Project resources
 ```
 
@@ -405,19 +415,29 @@ ClampedPinnedRodSolver/
 The package uses an organized directory structure that separates data by pipeline step:
 
 ```
-dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/
-├── 00.-Find Initial Rod Shape/          # Step 1: Initial rod generation
-│   └── Rod_Shape/
-│       ├── CLampedPinnedRod_sol_*.mat   # Rod geometry data
-│       └── Figures/                     # Initial rod shape plots
-├── 01.-Rotate Clamp/                    # Step 2: Rotation data generation  
-│   └── Rotated_Clamp/
-│       ├── CLampedPinnedRod_sol_*.mat   # Rod data (copied for processing)
-│       └── Figures/                     # Motion analysis plots (9 figures)
-└── 02.-Learning DataSet/                # Step 3: ML-ready datasets
-    ├── LearnigData_Rod_*_72sols_*.mat   # Full rotation datasets
-    ├── *_train_*.{jld2,mat}             # Training sets
-    └── *_test_*.{jld2,mat}              # Testing sets
+dataset/MATLAB code/
+├── Backup/                              # Backup files and archives
+└── Learning_Data_ClampedPinned_Rod_IK/
+    ├── 00.-Find Initial Rod Shape/      # Step 1: Initial rod generation
+    │   ├── AA_IK_ClampedPinned_Rod_Elliptical.m    # Main solver script
+    │   ├── Functions/                   # Helper functions
+    │   ├── Rod_Shape/                   # Generated rod geometry data
+    │   ├── Rod_Shape_reference/         # Reference solutions
+    │   └── Rod_Shape_Test/              # Test configurations
+    ├── 01.-Rotate Clamp/                # Step 2: Rotation data generation
+    │   ├── AA_Rotate_Clamp_FixedTip.m   # Main rotation script
+    │   ├── Functions/                   # Helper functions
+    │   ├── Rotated_Clamp/               # Generated rotation data
+    │   └── Rotated_Clamp_Reference/     # Reference rotation data
+    ├── 02.-Learning DataSet/            # Step 3: ML-ready datasets
+    │   ├── LearnigData_Rod_*_72sols_*.mat          # Full rotation datasets
+    │   ├── *_train_*.{jld2,mat}                    # Training sets
+    │   └── *_test_*.{jld2,mat}                     # Testing sets
+    ├── Figures/                         # Generated figure outputs
+    ├── Rotate Clamp/                    # Additional rotation references
+    ├── resources/                       # MATLAB project resources
+    ├── Learning_Data_ClampedPinned_Rod_IK.prj       # MATLAB project file
+    ├── LearnigData_Rod_ClampedPinned_Rotated_*.mat  # Direct dataset files
 ```
 
 ### Generated Files by Pipeline Step
@@ -526,8 +546,8 @@ LearnigData_Rod_ClampedPinned_Rotated_X02_Y00_mode2_test_015.mat
 
 ```julia
 # Clone the repository
-git clone https://github.com/jruiz125/Clamped-pinned-Rod-UDE.git
-cd EllipticalRodSolver
+git clone https://github.com/jruiz125/Clamped-Pinned-Rod-Solver.git
+cd Clamped-Pinned-Rod-Solver
 
 # Activate and instantiate environment
 using Pkg
@@ -652,4 +672,4 @@ If you use this package in your research, please cite:
 
 José Luis Ruiz-Erezuma - [GitHub](https://github.com/jruiz125)
 
-Project Link: [https://github.com/jruiz125/Clamped-pinned-Rod-UDE](https://github.com/jruiz125/Clamped-pinned-Rod-UDE)
+Project Link: [https://github.com/jruiz125/Clamped-Pinned-Rod-Solver](https://github.com/jruiz125/Clamped-Pinned-Rod-Solver)
