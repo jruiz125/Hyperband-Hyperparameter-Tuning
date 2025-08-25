@@ -1,6 +1,6 @@
 # ClampFixedRodSolver.jl
 
-A comprehensive Julia package for solving the inverse kinematics of clamped-pinned rods using elliptical integrals and neural networks.
+A comprehensive Julia package for solving the inverse kinematics of clamped-pinned rods using numerical methods.
 
 ## Overview
 
