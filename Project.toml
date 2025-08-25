@@ -1,6 +1,6 @@
 name = "ClampFixedRodSolver"
 uuid = "a63ead0a-413f-4e61-b0c0-828b99425baa"
-authors = ["José Luis Ruiz-Erezuma <your.email@example.com>"]
+authors = ["José Luis Ruiz-Erezuma <jruiz125@ikasle.ehu.eus>", "Oscar Altuzarra Maestre"]
 version = "0.1.0"
 
 [deps]
