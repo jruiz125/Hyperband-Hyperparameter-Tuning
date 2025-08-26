@@ -373,7 +373,7 @@ function solve_and_prepare_data(config; enable_logging=true, log_dir="logs", cap
     train_ratio_str = replace(string(round(config.train_ratio, digits=3)), "." => "")
     test_ratio_str = replace(string(round(1.0 - config.train_ratio, digits=3)), "." => "")
     
-    base_filename = "LearnigData_Rod_ClampedPinned_Rotated_X$(xp_str)_Y$(yp_str)_mode$(mode_str)"
+    base_filename = "LearnigData_Rod_Clamp_Pin_Rot_X$(xp_str)_Y$(yp_str)_mode$(mode_str)"
     
     # Generate rod filename from elliptical solver
     sol_number = config.sol_number

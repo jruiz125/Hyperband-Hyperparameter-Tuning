@@ -67,7 +67,7 @@ success = solve_and_prepare_data(config)
 if success
     println("✅ Pipeline completed successfully!")
     println("📊 Training/testing datasets ready for machine learning")
-    println("📁 Check dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/02.-Learning DataSet/")
+    println("📁 Check dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Learning_DataSet/")
 else
     println("❌ Pipeline failed - check logs for details")
 end
@@ -192,9 +192,9 @@ success = solve_and_prepare_data(config)
 
 if success
     # Load and analyze generated datasets
-    base_name = "LearnigData_Rod_ClampedPinned_Rotated_X03_Y01_mode2"
-    train_path = "dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/02.-Learning DataSet/$(base_name)_train_085.jld2"
-    test_path = "dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/02.-Learning DataSet/$(base_name)_test_015.jld2"
+    base_name = "LearnigData_Rod_Clamp_Pin_Rot_X03_Y01_mod2"
+    train_path = "dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Learning_DataSet/$(base_name)_train_085.jld2"
+    test_path = "dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Learning_DataSet/$(base_name)_test_015.jld2"
     
     # Load datasets
     train_data = load(train_path, "DataSet_train")
@@ -389,9 +389,9 @@ ClampedPinnedRodSolver/
 ├── dataset/                             # Generated data storage
 │   └── MATLAB code/
 │       └── Learning_Data_ClampedPinned_Rod_IK/
-│           ├── 00.-Find Initial Rod Shape/    # Step 1 outputs
-│           ├── 01.-Rotate Clamp/              # Step 2 outputs  
-│           └── 02.-Learning DataSet/          # Step 3 outputs (ML-ready)
+│           ├── Find_Initial_Rod_Shape/    # Step 1 outputs
+│           ├── Rotate_Clamp/              # Step 2 outputs  
+│           └── Learning_DataSet/          # Step 3 outputs (ML-ready)
 ├── figures/                             # Generated figure outputs
 ├── logs/                                # Pipeline execution logs
 └── resources/                           # Project resources
@@ -420,19 +420,19 @@ The package uses an organized directory structure that separates data by pipelin
 dataset/MATLAB code/
 ├── Backup/                              # Backup files and archives
 └── Learning_Data_ClampedPinned_Rod_IK/
-    ├── 00.-Find Initial Rod Shape/      # Step 1: Initial rod generation
+    ├── Find_Initial_Rod_Shape/          # Step 1: Initial rod generation
     │   ├── AA_IK_ClampedPinned_Rod_Elliptical.m    # Main solver script
     │   ├── Functions/                   # Helper functions
     │   ├── Rod_Shape/                   # Generated rod geometry data
     │   ├── Rod_Shape_reference/         # Reference solutions
     │   └── Rod_Shape_Test/              # Test configurations
-    ├── 01.-Rotate Clamp/                # Step 2: Rotation data generation
+    ├── Rotate_Clamp/                    # Step 2: Rotation data generation
     │   ├── AA_Rotate_Clamp_FixedTip.m   # Main rotation script
     │   ├── Functions/                   # Helper functions
     │   ├── Rotated_Clamp/               # Generated rotation data
-    │   └── Rotated_Clamp_Reference/     # Reference rotation data
-    ├── 02.-Learning DataSet/            # Step 3: ML-ready datasets
-    │   ├── LearnigData_Rod_*_72sols_*.mat          # Full rotation datasets
+    │   └── Rotated_Clamp_Ref/           # Reference rotation data
+    ├── Learning_DataSet/                # Step 3: ML-ready datasets
+    │   ├── LearnigData_Rod_*_72sol_*.mat           # Full rotation datasets
     │   ├── *_train_*.{jld2,mat}                    # Training sets
     │   └── *_test_*.{jld2,mat}                     # Testing sets
     ├── Figures/                         # Generated figure outputs
@@ -493,13 +493,13 @@ For configuration: `xp=0.2, yp=0.0, mode=2, train_ratio=0.85`
 CLampedPinnedRod_sol_1_mode_2_X02_Y00.mat
 
 # Step 2  
-LearnigData_Rod_ClampedPinned_Rotated_X02_Y00_72sols_mode2_revised.mat
+LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_72sol_mod2.mat
 
 # Step 3
-LearnigData_Rod_ClampedPinned_Rotated_X02_Y00_mode2_train_085.jld2
-LearnigData_Rod_ClampedPinned_Rotated_X02_Y00_mode2_train_085.mat
-LearnigData_Rod_ClampedPinned_Rotated_X02_Y00_mode2_test_015.jld2
-LearnigData_Rod_ClampedPinned_Rotated_X02_Y00_mode2_test_015.mat
+LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_mod2_train_085.jld2
+LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_mod2_train_085.mat
+LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_mod2_test_015.jld2
+LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_mod2_test_015.mat
 ```
 
 **Position Encoding:**

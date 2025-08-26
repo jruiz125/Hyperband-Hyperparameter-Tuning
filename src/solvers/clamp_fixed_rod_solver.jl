@@ -75,7 +75,7 @@ Each trajectory contains 11 base parameters plus rod shape data:
 
 # Output Files
 Generated in timestamped folders under `dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/`:
-- **Learning Data**: `LearnigData_Rod_ClampedPinned_Rotated_[XP]_[YP]_[N]sols_mode[M]_revised.mat`
+- **Learning Data**: `LearnigData_Rod_Clamp_Pin_Rot_[XP]_[YP]_[N]sols_mode[M].mat`
 - **Figures**: Motion visualization, phase plots, and analysis charts (PNG/FIG)
 - **Reference Comparison**: Statistical validation against existing reference data
 
@@ -311,15 +311,15 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
 
         % Set up paths based on actual folder structure
         addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK'));
-        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp'));
-        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Functions'));
-        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Rotated_Clamp'));
+        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp'));
+        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Functions'));
+        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp'));
         
         % Set the main data folder path for file operations
-        data_folder = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Rotated_Clamp');
+        data_folder = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp');
 
         % Create timestamped folder for saving figures (using consistent timestamp)
-        figures_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Rotated_Clamp', 'Figures');
+        figures_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp', 'Figures');
         
         % Format xp value for folder naming (e.g., 0.2 -> X02, 0.5 -> X05, -0.2 -> XN02)
         xp_scaled = abs(round(xp * 10));
@@ -379,16 +379,16 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         end
 
         % Add paths and verify they exist
-        if exist(fullfile(base_dir, '01.-Rotate Clamp'), 'dir') == 7
+        if exist(fullfile(base_dir, 'Rotate_Clamp'), 'dir') == 7
             fprintf('✓ Added Rotate Clamp path to MATLAB\\n');
         end
-        if exist(fullfile(base_dir, '01.-Rotate Clamp', 'Functions'), 'dir') == 7
+        if exist(fullfile(base_dir, 'Rotate_Clamp', 'Functions'), 'dir') == 7
             fprintf('✓ Added Rotate Clamp Functions path to MATLAB\\n');
         end
 
         fprintf('\\n✓ MATLAB paths configured from project root\\n');
         fprintf('  Base: %s\\n', base_dir);
-        fprintf('  Rotate Clamp: %s\\n', fullfile(base_dir, '01.-Rotate Clamp'));
+        fprintf('  Rotate Clamp: %s\\n', fullfile(base_dir, 'Rotate_Clamp'));
         fprintf('  Data folder: %s\\n', data_folder);
 
         % Verify MATLAB files exist
@@ -417,7 +417,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         
         % Check in the main data location
         possible_locations = {
-            fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Rotated_Clamp')
+            fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp')
         };
         
         file_found = false;
@@ -446,7 +446,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         % Notes(10/08/2025): added code lines
         % --> %load('CLampedPinnedRod_sol_1_mode_2_X02.mat') ;
         % --> %addpath('Functions') ; % Note: Paths are already configured properly in the earlier section
-        % --> %save('LearnigData_Rod_ClampedPinned_Rotated_X02_72sols_mode2_revised','DataSet') ;
+        % --> %save('LearnigData_Rod_Clamp_Pin_Rot_X02_72sol_mod2','DataSet') ;
         % --> % Save DataSet when Ntheta = last solved trajectory
         % --> typo error: font_size = 10 ; instead of fontsiz = 10 ;
         %
@@ -483,8 +483,8 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         % Re-add paths after clear statement
         project_root = matlab_project_root;
         addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK'));
-        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp'));
-        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Rotated_Clamp'));
+        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp'));
+        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp'));
 
         % Recreate xp_str and yp_str variables after clear statement
         % Format xp value for folder naming (e.g., 0.2 -> X02, 0.5 -> X05, -0.2 -> XN02)
@@ -521,8 +521,8 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         end
         
         % Create timestamped folder for saving figures (using consistent timestamp)
-        % All motion analysis figures now go to unified '01.-Rotate Clamp' directory
-        figures_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Rotated_Clamp', 'Figures');
+        % All motion analysis figures now go to unified 'Rotate_Clamp' directory
+        figures_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp', 'Figures');
         figures_folder_name = sprintf('%s_mode_%d_%s_%s', timestamp_str, rod_mode, xp_str, yp_str);
         figures_folder = fullfile(figures_base, figures_folder_name);
         
@@ -709,14 +709,14 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         
         # Check if the required rod data file exists before proceeding
         expected_rod_file = "CLampedPinnedRod_sol_$(sol_number)_mode_$(Int(rod_mode))_$(xp_suffix)_$(yp_suffix).mat"
-        rod_data_path = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "01.-Rotate Clamp", "Rotated_Clamp", expected_rod_file)
+        rod_data_path = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Rotate_Clamp", "Rotated_Clamp", expected_rod_file)
         
         if !isfile(rod_data_path)
             println("\n❌ SOLVER CANNOT PROCEED")
             println("✗ Required rod data file not found: $expected_rod_file")
             println("✗ Expected location: $rod_data_path")
             println("\n📋 Available rod data files:")
-            rod_dir = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "01.-Rotate Clamp", "Rotated_Clamp")
+            rod_dir = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Rotate_Clamp", "Rotated_Clamp")
             if isdir(rod_dir)
                 for file in readdir(rod_dir)
                     if endswith(file, ".mat") && startswith(file, "CLampedPinnedRod")
@@ -755,12 +755,12 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         
         % Re-add paths after previous clear statement
         addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK'));
-        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp'));
-        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Functions'));
-        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Rotated_Clamp'));
+        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp'));
+        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Functions'));
+        addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp'));
         
         % Change to the data directory where the rod data files are located
-        data_dir = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Rotated_Clamp');
+        data_dir = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp');
         cd(data_dir);
         fprintf('Changed directory to: %s\\n', pwd);
         
@@ -781,7 +781,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         YP = IN.py_end;
 
         % Setup figures folder for saving plots (using consistent timestamp)
-        figures_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Rotated_Clamp', 'Figures');
+        figures_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp', 'Figures');
         
         % Recreate xp_str and yp_str variables for figure naming (using passed xp, yp, mode values)
         % Format xp value for folder naming (e.g., 0.2 -> X02, 0.5 -> X05, -0.2 -> XN02)
@@ -1062,7 +1062,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
                     DataSetSaved = DataSet(1:i, :);
                     
                     % Construct parametric output filename
-                    output_filename = ['LearnigData_Rod_ClampedPinned_Rotated_' xp_suffix '_' yp_suffix '_' num2str(Ntheta) 'sols_mode' num2str(rod_mode) '_revised.mat'];
+                    output_filename = ['LearnigData_Rod_Clamp_Pin_Rot_' xp_suffix '_' yp_suffix '_' num2str(Ntheta) 'sols_mode' num2str(rod_mode) '.mat'];
                     output_file = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', output_filename);
                     
                     % Save the subset (using temporary variable name)
@@ -1151,7 +1151,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
             try
                 # Construct the expected filename
                 @mget project_root xp_suffix yp_suffix Ntheta rod_mode
-                filename = "LearnigData_Rod_ClampedPinned_Rotated_$(xp_suffix)_$(yp_suffix)_$(Int(Ntheta))sols_mode$(Int(rod_mode))_revised.mat"
+                filename = "LearnigData_Rod_Clamp_Pin_Rot_$(xp_suffix)_$(yp_suffix)_$(Int(Ntheta))sols_mode$(Int(rod_mode)).mat"
                 filepath = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", filename)
                 
                 # Add delay to allow file system to complete write operation
@@ -1248,7 +1248,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
             
             if save_needed
                 % Construct parametric output filename
-                output_filename = ['LearnigData_Rod_ClampedPinned_Rotated_' xp_suffix '_' yp_suffix '_' num2str(Ntheta) 'sols_mode' num2str(rod_mode) '_revised.mat'];
+                output_filename = ['LearnigData_Rod_Clamp_Pin_Rot_' xp_suffix '_' yp_suffix '_' num2str(Ntheta) 'sols_mode' num2str(rod_mode) '.mat'];
                 output_file = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', output_filename);
                 
                 fprintf('Output filename: %s\\n', output_filename);
@@ -1290,7 +1290,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         end
 
         % Set up figures folder with timestamp and parameter encoding
-        rotate_clamp_folder = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', '01.-Rotate Clamp', 'Rotated_Clamp');
+        rotate_clamp_folder = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp');
         figures_main_folder = fullfile(rotate_clamp_folder, 'Figures');
         
         % Create timestamped subfolder with parameter encoding
@@ -1483,13 +1483,13 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Save in a *.mat file the Learning Data Found
 
-        % Original MATLAB logic: save('LearnigData_Rod_ClampedPinned_Rotated_X02_72sols_mode2_revised','DataSet')
+        % Original MATLAB logic: save('LearnigData_Rod_Clamp_Pin_Rot_X02_72sol_mod2','DataSet')
         % Modified to be parametric and respect save_at_step configuration
         
         % Only save final dataset if save_at_step was set to full rotation
         if last_solved_trajectory == (Ntheta+1)
             % Construct parametric output filename
-            output_filename = ['LearnigData_Rod_ClampedPinned_Rotated_' xp_suffix '_' yp_suffix '_' num2str(Ntheta) 'sols_mode' num2str(rod_mode) '_revised.mat'];
+            output_filename = ['LearnigData_Rod_Clamp_Pin_Rot_' xp_suffix '_' yp_suffix '_' num2str(Ntheta) 'sols_mode' num2str(rod_mode) '.mat'];
             output_file = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', output_filename);
             
             % For full rotation save, include all trajectories
@@ -1581,7 +1581,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         try
             # Check if the expected output file was created
             @mget project_root xp_suffix yp_suffix Ntheta rod_mode
-            expected_filename = "LearnigData_Rod_ClampedPinned_Rotated_$(xp_suffix)_$(yp_suffix)_$(Int(Ntheta))sols_mode$(Int(rod_mode))_revised.mat"
+            expected_filename = "LearnigData_Rod_Clamp_Pin_Rot_$(xp_suffix)_$(yp_suffix)_$(Int(Ntheta))sols_mode$(Int(rod_mode)).mat"
             expected_filepath = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", expected_filename)
             
             if isfile(expected_filepath)
@@ -1641,7 +1641,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
                 
                 # Check if dataset was saved despite interruption
                 expected_file = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", 
-                                       "LearnigData_Rod_ClampedPinned_Rotated_$(xp_suffix)_$(yp_suffix)_72sols_mode$(mode)_revised.mat")
+                                       "LearnigData_Rod_Clamp_Pin_Rot_$(xp_suffix)_$(yp_suffix)_72sol_mod$(mode).mat")
                 
                 if isfile(expected_file)
                     println("✅ SUCCESS: Dataset was saved before interruption!")

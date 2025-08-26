@@ -27,12 +27,12 @@ Saves the split datasets as both .mat files (for MATLAB compatibility) and .jld2
 
 # Files Generated
 For config with xp=X, yp=Y, mode=M, train_ratio=TR:
-- Training set: `LearnigData_Rod_ClampedPinned_Rotated_X{X}_Y{Y}_mode{M}_train_{TR}.mat` and `.jld2`
-- Testing set: `LearnigData_Rod_ClampedPinned_Rotated_X{X}_Y{Y}_mode{M}_test_{1-TR}.mat` and `.jld2`
+- Training set: `LearnigData_Rod_Clamp_Pin_Rot_X{X}_Y{Y}_mode{M}_train_{TR}.mat` and `.jld2`
+- Testing set: `LearnigData_Rod_Clamp_Pin_Rot_X{X}_Y{Y}_mode{M}_test_{1-TR}.mat` and `.jld2`
 
 Example: For xp=0.2, yp=0.0, mode=2, train_ratio=0.85:
-- Training: `LearnigData_Rod_ClampedPinned_Rotated_X02_Y00_mode2_train_085.jld2`
-- Testing: `LearnigData_Rod_ClampedPinned_Rotated_X02_Y00_mode2_test_015.jld2`
+- Training: `LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_mode2_train_085.jld2`
+- Testing: `LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_mode2_test_015.jld2`
 
 # Example
 ```julia
@@ -60,7 +60,7 @@ function split_dataset_for_training(config)
         mode_str = replace(string(Int(config.mode)), "." => "")
         
         # Construct the expected filename
-        saved_filename = "LearnigData_Rod_ClampedPinned_Rotated_X$(xp_str)_Y$(yp_str)_72sols_mode$(mode_str)_revised.mat"
+        saved_filename = "LearnigData_Rod_Clamp_Pin_Rot_X$(xp_str)_Y$(yp_str)_72sol_mod$(mode_str).mat"
         saved_path = joinpath("dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", saved_filename)
         
         if !isfile(saved_path)
@@ -88,7 +88,7 @@ function split_dataset_for_training(config)
         
         # Add MATLAB path for the target save directory (repository-portable)
         project_root = pwd()
-        target_dir_absolute = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "02.-Learning DataSet")
+        target_dir_absolute = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Learning_DataSet")
         target_dir_matlab = replace(target_dir_absolute, "\\" => "/")
         
         @mput target_dir_matlab
@@ -135,10 +135,10 @@ function split_dataset_for_training(config)
         train_ratio_str = replace(string(round(config.train_ratio, digits=3)), "." => "")
         test_ratio_str = replace(string(round(1.0 - config.train_ratio, digits=3)), "." => "")
         
-        base_filename = "LearnigData_Rod_ClampedPinned_Rotated_X$(xp_str)_Y$(yp_str)_mode$(mode_str)"
+        base_filename = "LearnigData_Rod_Clamp_Pin_Rot_X$(xp_str)_Y$(yp_str)_mode$(mode_str)"
         
-        # Define target directory - use organized 02.-Learning DataSet folder
-        target_dir = joinpath("dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "02.-Learning DataSet")
+        # Define target directory - use organized Learning_DataSet folder
+        target_dir = joinpath("dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Learning_DataSet")
         
         # Ensure target directory exists
         if !isdir(target_dir)

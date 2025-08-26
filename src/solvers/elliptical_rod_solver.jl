@@ -44,7 +44,7 @@ rod configurations using an elliptic integral approach.
 - `Bool`: `true` if solver completed successfully, `false` if errors occurred
 
 # Output Files
-Generated in timestamped folders under `dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/00.-Find Initial Rod Shape/`:
+Generated in timestamped folders under `dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Find_Initial_Rod_Shape/`:
 - **Figures**: Contour plots, individual solutions, and combined visualizations (PNG/FIG)
 - **Data**: Solution parameters saved as `.mat` files for further analysis
 
@@ -151,11 +151,11 @@ function elliptical_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothin
         fprintf('Using project root: %s\\n', project_root);
 
         matlab_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK');
-        functions_path = fullfile(matlab_base, '00.-Find Initial Rod Shape');
+        functions_path = fullfile(matlab_base, 'Find_Initial_Rod_Shape');
         functions_subpath = fullfile(functions_path, 'Functions');
         
         % Create timestamped DATASET folder for saving data and figures (using consistent timestamp)
-        dataset_base = fullfile(matlab_base, '00.-Find Initial Rod Shape', dataset_folder_name);
+        dataset_base = fullfile(matlab_base, 'Find_Initial_Rod_Shape', dataset_folder_name);
         if ~exist(dataset_base, 'dir')
             mkdir(dataset_base);
             fprintf('✓ Created dataset folder: %s\\n', dataset_base);
@@ -395,7 +395,7 @@ function elliptical_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothin
 
         % Setup dataset folder and figures subfolder for saving plots and data (using consistent timestamp)
         matlab_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK');
-        dataset_base = fullfile(matlab_base, '00.-Find Initial Rod Shape', dataset_folder_name);
+        dataset_base = fullfile(matlab_base, 'Find_Initial_Rod_Shape', dataset_folder_name);
         if ~exist(dataset_base, 'dir')
             mkdir(dataset_base);
             fprintf('✓ Created dataset folder: %s\\n', dataset_base);
@@ -652,7 +652,7 @@ function elliptical_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothin
         % Ensure figures folder path is available for multiple solutions plot
         if ~exist('figures_folder', 'var')
             matlab_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK');
-            dataset_base = fullfile(matlab_base, '00.-Find Initial Rod Shape', dataset_folder_name);
+            dataset_base = fullfile(matlab_base, 'Find_Initial_Rod_Shape', dataset_folder_name);
             figures_base_folder = fullfile(dataset_base, 'Figures');
             
             % Format xp value for folder naming (e.g., 0.2 -> X02, 0.5 -> X05)
