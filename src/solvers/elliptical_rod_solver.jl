@@ -775,7 +775,7 @@ function elliptical_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothin
                     save(save_fullpath, 'IN', 'OUT');
                     
                     % Also save to the additional Rotate Clamp directory
-                    rotate_clamp_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate Clamp', 'Rotated_Clamp');
+                    rotate_clamp_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp');
                     if ~exist(rotate_clamp_base, 'dir')
                         mkdir(rotate_clamp_base);
                     end
