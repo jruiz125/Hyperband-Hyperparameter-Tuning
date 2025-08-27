@@ -91,7 +91,7 @@ Handles compatibility between new filename format (with yp) and old reference fi
 
 # Arguments
 - `config`: Configuration used for the computation
-- `computed_results`: Results dictionary from elliptical_rod_solver_no_comparison
+- `computed_results`: Results dictionary from initial_rod_solver_no_comparison
 - `tolerance`: Numerical tolerance for comparisons (default: 1e-3)
 
 # Returns

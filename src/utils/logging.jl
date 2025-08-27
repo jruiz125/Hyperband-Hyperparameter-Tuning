@@ -80,8 +80,15 @@ function setup_logging(config; log_dir="logs", capture_all_output=false)
     end
     
     # Generate log filename based on configuration and timestamp
-    xp_str = replace(string(config.xp), "." => "", "-" => "neg")
-    yp_str = replace(string(config.yp), "." => "", "-" => "neg")
+    # Fix floating-point precision issues by rounding and scaling
+    xp_str = string(round(Int, config.xp * 10))
+    if config.xp < 0
+        xp_str = "neg" * xp_str
+    end
+    yp_str = string(round(Int, config.yp * 10))
+    if config.yp < 0
+        yp_str = "neg" * yp_str
+    end
     mode_str = replace(string(Int(config.mode)), "." => "")
     timestamp = Dates.format(now(), "yyyymmdd_HHMMSS")
     

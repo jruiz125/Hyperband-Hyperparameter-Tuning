@@ -55,13 +55,43 @@ function split_dataset_for_training(config)
         println("\n🔄 Loading dataset from saved file...")
         
         # Generate filename components
-        xp_str = replace(string(config.xp), "." => "", "-" => "neg")
-        yp_str = replace(string(config.yp), "." => "", "-" => "neg")  
+        # Fix floating-point precision issues by rounding and scaling
+        # Use same format as clamp solver (with zero padding for single digits)
+        xp_scaled = abs(round(config.xp * 10))
+        if config.xp >= 0
+            if xp_scaled < 10
+                xp_str = "0$(Int(xp_scaled))"
+            else
+                xp_str = "$(Int(xp_scaled))"
+            end
+        else
+            if xp_scaled < 10
+                xp_str = "neg0$(Int(xp_scaled))"
+            else
+                xp_str = "neg$(Int(xp_scaled))"
+            end
+        end
+        
+        yp_scaled = abs(round(config.yp * 10))
+        if config.yp >= 0
+            if yp_scaled < 10
+                yp_str = "0$(Int(yp_scaled))"
+            else
+                yp_str = "$(Int(yp_scaled))"
+            end
+        else
+            if yp_scaled < 10
+                yp_str = "neg0$(Int(yp_scaled))"
+            else
+                yp_str = "neg$(Int(yp_scaled))"
+            end
+        end
         mode_str = replace(string(Int(config.mode)), "." => "")
         
-        # Construct the expected filename
-        saved_filename = "LearnigData_Rod_Clamp_Pin_Rot_X$(xp_str)_Y$(yp_str)_72sol_mod$(mode_str).mat"
-        saved_path = joinpath("dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", saved_filename)
+        # Construct the expected filename (must match MATLAB engine output format)
+        # Main dataset file does NOT have train_ratio suffix (contains all trajectories)
+        saved_filename = "LearnigData_Rod_Clamp_Pin_Rot_X$(xp_str)_Y$(yp_str)_$(config.angular_steps)sols_mode$(mode_str).mat"
+        saved_path = joinpath("dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Learning DataSet", saved_filename)
         
         if !isfile(saved_path)
             println("✗ Cannot find saved dataset file: $(saved_path)")
@@ -70,10 +100,13 @@ function split_dataset_for_training(config)
         
         println("   Loading dataset from: $(saved_path)")
         
-        # Load dataset in MATLAB  
+        # Convert to absolute path for MATLAB
+        absolute_saved_path = abspath(saved_path)
+        
+        # Load dataset in MATLAB using absolute path
         mat"""
         clear DataSet_temp DataSet;
-        load($saved_path);
+        load($absolute_saved_path);
         if exist('DataSet', 'var')
             DataSet_temp = DataSet;
             fprintf('✓ Dataset loaded: %d trajectories x %d points\\n', size(DataSet_temp, 1), size(DataSet_temp, 2));
@@ -88,7 +121,7 @@ function split_dataset_for_training(config)
         
         # Add MATLAB path for the target save directory (repository-portable)
         project_root = pwd()
-        target_dir_absolute = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Learning_DataSet")
+        target_dir_absolute = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Learning DataSet")
         target_dir_matlab = replace(target_dir_absolute, "\\" => "/")
         
         @mput target_dir_matlab
@@ -127,8 +160,37 @@ function split_dataset_for_training(config)
         println("\n💾 Saving split datasets...")
         
         # Generate filenames based on configuration
-        xp_str = replace(string(config.xp), "." => "", "-" => "neg")
-        yp_str = replace(string(config.yp), "." => "", "-" => "neg")
+        # Fix floating-point precision issues by rounding and scaling
+        # Use same format as clamp solver (with zero padding for single digits)
+        xp_scaled = abs(round(config.xp * 10))
+        if config.xp >= 0
+            if xp_scaled < 10
+                xp_str = "0$(Int(xp_scaled))"
+            else
+                xp_str = "$(Int(xp_scaled))"
+            end
+        else
+            if xp_scaled < 10
+                xp_str = "neg0$(Int(xp_scaled))"
+            else
+                xp_str = "neg$(Int(xp_scaled))"
+            end
+        end
+        
+        yp_scaled = abs(round(config.yp * 10))
+        if config.yp >= 0
+            if yp_scaled < 10
+                yp_str = "0$(Int(yp_scaled))"
+            else
+                yp_str = "$(Int(yp_scaled))"
+            end
+        else
+            if yp_scaled < 10
+                yp_str = "neg0$(Int(yp_scaled))"
+            else
+                yp_str = "neg$(Int(yp_scaled))"
+            end
+        end
         mode_str = replace(string(Int(config.mode)), "." => "")
         
         # Format train/test ratios for filenames (remove decimal point, round to avoid floating point issues)
@@ -137,8 +199,8 @@ function split_dataset_for_training(config)
         
         base_filename = "LearnigData_Rod_Clamp_Pin_Rot_X$(xp_str)_Y$(yp_str)_mode$(mode_str)"
         
-        # Define target directory - use organized Learning_DataSet folder
-        target_dir = joinpath("dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Learning_DataSet")
+        # Define target directory - use organized Learning DataSet folder
+        target_dir = joinpath("dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Learning DataSet")
         
         # Ensure target directory exists
         if !isdir(target_dir)

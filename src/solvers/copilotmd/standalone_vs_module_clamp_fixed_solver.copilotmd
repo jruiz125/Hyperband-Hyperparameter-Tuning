@@ -1,3 +1,206 @@
+> 🚨 Note: This log may contain personal information such as the contents of your files or terminal output. Please review the contents carefully before sharing.
+# panel/unknown - be5ea636
+
+## Metadata
+~~~
+requestType      : ChatCompletions
+model            : claude-opus-4
+maxPromptTokens  : 68001
+maxResponseTokens: 16000
+location         : 1
+postOptions      : {"temperature":0.1,"top_p":1,"max_tokens":16000,"n":1,"stream":true}
+intent           : undefined
+startTime        : 2025-08-26T19:51:03.537Z
+endTime          : 2025-08-26T19:51:33.345Z
+duration         : 29808ms
+ourRequestId     : 8475deab-dd97-4d6e-b4a4-940f71afc64c
+requestId        : 8475deab-dd97-4d6e-b4a4-940f71afc64c
+serverRequestId  : 8475deab-dd97-4d6e-b4a4-940f71afc64c
+timeToFirstToken : 2528ms
+usage            : {"completion_tokens":1097,"prompt_tokens":25889,"prompt_tokens_details":{"cached_tokens":0},"total_tokens":26986}
+~~~
+## Request Messages
+### System
+~~~md
+You are an AI programming assistant.
+When asked for your name, you must respond with "GitHub Copilot".
+Follow the user's requirements carefully & to the letter.
+Follow Microsoft content policies.
+Avoid content that violates copyrights.
+If you are asked to generate content that is harmful, hateful, racist, sexist, lewd, or violent, only respond with "Sorry, I can't assist with that."
+Keep your answers short and impersonal.
+You can answer general programming questions and perform the following tasks: 
+* Ask a question about the files in your current workspace
+* Explain how the code in your active editor works
+* Make changes to existing code
+* Review the selected code in your active editor
+* Generate unit tests for the selected code
+* Propose a fix for the problems in the selected code
+* Scaffold code for a new file or project in a workspace
+* Create a new Jupyter Notebook
+* Ask questions about VS Code
+* Generate query parameters for workspace search
+* Ask how to do something in the terminal
+* Explain what just happened in the terminal
+* Propose a fix for the problems in the selected code
+* Explain how the code in your active editor works
+* Review the selected code in your active editor
+* Generate unit tests for the selected code
+* Make changes to existing code
+You use the Claude Opus 4 large language model.
+The user has the following folder open: c:\Users\josel\MATLAB\Projects\ClampedPinnedRodSolver.
+The current date is August 26, 2025.
+Use Markdown formatting in your answers.
+When suggesting code changes or new content, use Markdown code blocks.
+To start a code block, use 4 backticks.
+After the backticks, add the programming language name.
+If the code modifies an existing file or should be placed at a specific location, add a line comment with 'filepath:' and the file path.
+If you want the user to decide where to place the code, do not add the file path comment.
+In the code block, use a line comment with '...existing code...' to indicate code that is already present in the file.
+````languageId
+// filepath: c:\path\to\file
+// ...existing code...
+{ changed code }
+// ...existing code...
+{ changed code }
+// ...existing code...
+````For code blocks use four backticks to start and end.
+Avoid wrapping the whole response in triple backticks.
+The user works in an IDE called Visual Studio Code which has a concept for editors with open files, integrated unit test support, an output pane that shows the output of running the code as well as an integrated terminal.
+The user is working on a Windows machine. Please respond with system specific commands if applicable.
+The active document is the source code the user is looking at right now.
+You can only give one reply for each conversation turn.
+~~~
+
+### User
+~~~md
+Review the functionallity of clamp_fixed_rod_solver.jl
+~~~
+
+### Assistant
+~~~md
+## Review of `clamp_fixed_rod_solver.jl` Functionality
+
+### Overview
+This Julia solver interfaces with MATLAB to generate learning datasets for clamped-pinned rod configurations. It rotates the clamped end through 360° while maintaining a fixed pinned end position, solving inverse kinematics at each step.
+
+### Key Functionality
+
+#### 1. **Configuration Management**
+- Accepts `ClampedRodConfig` parameter or uses defaults
+- Supports customizable rotation parameters (angle, steps, save points)
+- Automatically formats file naming conventions (e.g., `xp=0.2` → `X02`)
+
+#### 2. **MATLAB Integration**
+- Manages MATLAB engine lifecycle with error recovery
+- Sets up proper paths for MATLAB code execution
+- Handles variable transfer between Julia and MATLAB environments
+- Implements memory management to prevent crashes during long computations
+
+#### 3. **Data Generation Algorithm**
+```julia
+# For each rotation angle:
+1. Transform target coordinates to local frame
+2. Solve inverse kinematics using IK_fsolve
+3. Transform results back to global frame
+4. Store configuration data (11 parameters + shape data)
+```
+
+#### 4. **Output Generation**
+- **Dataset**: `LearnigData_Rod_Clamp_Pin_Rot_[XP]_[YP]_[N]sols_mode[M].mat`
+- **Visualizations**: 9 different plots saved as PNG/FIG
+  - Initial rod configuration plots
+  - Motion animation
+  - Phase plots
+  - Parameter evolution plots
+
+### Strengths
+
+1. **Robust Error Handling**
+   - Multiple retry attempts for MATLAB initialization
+   - Graceful handling of early termination
+   - File existence validation before execution
+
+2. **Memory Management**
+   - Periodic cleanup during computation loops
+   - Configurable save points to prevent data loss
+
+3. **Comprehensive Documentation**
+   - Detailed docstring with examples
+   - Clear parameter descriptions
+   - Usage examples for different scenarios
+
+4. **Flexible Configuration**
+   - Supports negative xp/yp values
+   - Customizable rotation parameters
+   - Multiple solution modes
+
+### Areas for Improvement
+
+1. **Code Organization**
+   - The function is very long (~1500 lines) - consider breaking into smaller functions
+   - MATLAB code embedded as strings makes maintenance difficult
+
+2. **Error Messages**
+   - Some error paths could provide more specific guidance
+   - Dataset retrieval failures could be more informative
+
+3. **Performance**
+   - No parallel processing utilized
+   - Could benefit from progress bars for long computations
+
+4. **Testing**
+   - No unit tests included
+   - Could benefit from validation against known solutions
+
+### Technical Details
+
+#### Input Parameters (via config)
+- Rod geometry: `L`, `EI`, `N`
+- Target position: `xp`, `yp`
+- Mode parameters: `mode`, `sol_number`
+- Rotation: `rotation_angle`, `angular_steps`, `save_at_step`
+
+#### Output Structure
+Each trajectory contains:
+```
+1-3:   Clamped end position & orientation (px₀, py₀, θ₀)
+4:     Buckling mode number
+5-6:   Pinned end position (px_end, py_end)
+7-9:   Initial forces (M₀, Fx₀, Fy₀)
+10-11: Force magnitude & direction
+12+:   Rod shape arrays (px, py, moments, angles)
+```
+
+### Usage Recommendations
+
+1. **Before Running**:
+   - Ensure MATLAB is installed with valid license
+   - Verify required rod data files exist
+   - Check available disk space for outputs
+
+2. **Parameter Selection**:
+   - Start with small `angular_steps` for testing
+   - Use `save_at_step` to protect against crashes
+   - Choose `xp` values with existing rod data
+
+3. **Troubleshooting**:
+   - If MATLAB fails: Run `matlab -regserver` as admin
+   - If solver fails: Try smaller `xp` values
+   - If memory issues: Reduce `angular_steps`
+
+### Conclusion
+
+This is a well-structured solver that effectively bridges Julia and MATLAB for complex mechanical simulations. While it could benefit from modularization and enhanced error handling, it provides robust functionality for generating machine learning datasets from rod mechanics simulations.
+~~~
+
+### User
+~~~md
+<attachments>
+<attachment id="file:clamp_fixed_rod_solver.jl">
+User's active file:
+````julia
+# filepath: c:\Users\josel\MATLAB\Projects\ClampedPinnedRodSolver\src\solvers\clamp_fixed_rod_solver.jl
 # ---------------------------------------------------------------------------
 # Clamp Fixed Rod Solver
 # 
@@ -6,10 +209,6 @@
 # 
 # Can be run standalone or as part of the EllipticalRodSolver module
 # ---------------------------------------------------------------------------
-# Set this to true to force execution when using VSCode (overridable)
-if !@isdefined(FORCE_STANDALONE_EXECUTION)
-    const FORCE_STANDALONE_EXECUTION = false
-end
 
 # Setup for standalone usage (when run directly)
 if !@isdefined(ClampedRodConfig)
@@ -20,7 +219,6 @@ end
 # Import required packages
 using JLD2
 using Dates
-using MATLAB
 
 # Main solver function starts here
 using Statistics
@@ -79,8 +277,8 @@ Each trajectory contains 11 base parameters plus rod shape data:
 10. **Slope**: Angle distribution along rod
 
 # Output Files
-Generated in timestamped folders under `dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Learning DataSet/`:
-- **Learning Data**: `LearnigData_Rod_Clamp_Pin_Rot_[XP]_[YP]_mode[M]_[TR].mat` (where TR is train_ratio)
+Generated in timestamped folders under `dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/`:
+- **Learning Data**: `LearnigData_Rod_Clamp_Pin_Rot_[XP]_[YP]_[N]sols_mode[M].mat`
 - **Figures**: Motion visualization, phase plots, and analysis charts (PNG/FIG)
 - **Reference Comparison**: Statistical validation against existing reference data
 
@@ -166,7 +364,6 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         
         # Rod configuration parameters (derived from config)
         sol_number = config.sol_number     # Solution number from config
-        train_ratio = config.train_ratio   # Training ratio for dataset splitting
         
         # Format xp suffix for file naming (e.g., 0.2 -> X02, 0.5 -> X05, -0.2 -> XN02)
         xp_scaled = abs(round(xp * 10))
@@ -302,7 +499,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         
         try
             # Now send the project root path and timestamp to MATLAB
-            @mput matlab_project_root timestamp_str sol_number xp_suffix yp_suffix xp yp rod_mode train_ratio
+            @mput matlab_project_root timestamp_str sol_number xp_suffix yp_suffix xp yp rod_mode
             
             mat"""
             % MATLAB path setup with received project root and timestamp
@@ -327,9 +524,38 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         % Create timestamped folder for saving figures (using consistent timestamp)
         figures_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp', 'Figures');
         
-        % Use xp_suffix and yp_suffix passed from Julia (don't regenerate)
-        xp_str = xp_suffix;  % Use Julia-generated suffix
-        yp_str = yp_suffix;  % Use Julia-generated suffix
+        % Format xp value for folder naming (e.g., 0.2 -> X02, 0.5 -> X05, -0.2 -> XN02)
+        xp_scaled = abs(round(xp * 10));
+        if xp >= 0
+            if xp_scaled < 10
+                xp_str = sprintf('X0%d', xp_scaled);
+            else
+                xp_str = sprintf('X%d', xp_scaled);
+            end
+        else
+            % Handle negative values
+            if xp_scaled < 10
+                xp_str = sprintf('XN0%d', xp_scaled);
+            else
+                xp_str = sprintf('XN%d', xp_scaled);
+            end
+        end
+        
+        % Format yp value for folder naming (e.g., 0.0 -> Y00, 0.5 -> Y05, -0.3 -> YN03)
+        yp_scaled = round(abs(yp) * 10);
+        if yp >= 0
+            if yp_scaled < 10
+                yp_str = sprintf('Y0%d', yp_scaled);
+            else
+                yp_str = sprintf('Y%d', yp_scaled);
+            end
+        else
+            if yp_scaled < 10
+                yp_str = sprintf('YN0%d', yp_scaled);
+            else
+                yp_str = sprintf('YN%d', yp_scaled);
+            end
+        end
         
         % Create folder name with timestamp, mode, xp and yp identifiers
         figures_folder_name = sprintf('%s_mode_%d_%s_%s', timestamp_str, rod_mode, xp_str, yp_str);
@@ -464,9 +690,38 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         addpath(fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp'));
 
         % Recreate xp_str and yp_str variables after clear statement
-        % Use xp_suffix and yp_suffix passed from Julia (don't regenerate)
-        xp_str = xp_suffix;  % Use Julia-generated suffix
-        yp_str = yp_suffix;  % Use Julia-generated suffix
+        % Format xp value for folder naming (e.g., 0.2 -> X02, 0.5 -> X05, -0.2 -> XN02)
+        xp_scaled = abs(round(xp * 10));
+        if xp >= 0
+            if xp_scaled < 10
+                xp_str = sprintf('X0%d', xp_scaled);
+            else
+                xp_str = sprintf('X%d', xp_scaled);
+            end
+        else
+            % Handle negative values
+            if xp_scaled < 10
+                xp_str = sprintf('XN0%d', xp_scaled);
+            else
+                xp_str = sprintf('XN%d', xp_scaled);
+            end
+        end
+        
+        % Format yp value for folder naming (e.g., 0.0 -> Y00, 0.5 -> Y05, -0.3 -> YN03)
+        yp_scaled = round(abs(yp) * 10);
+        if yp >= 0
+            if yp_scaled < 10
+                yp_str = sprintf('Y0%d', yp_scaled);
+            else
+                yp_str = sprintf('Y%d', yp_scaled);
+            end
+        else
+            if yp_scaled < 10
+                yp_str = sprintf('YN0%d', yp_scaled);
+            else
+                yp_str = sprintf('YN%d', yp_scaled);
+            end
+        end
         
         % Create timestamped folder for saving figures (using consistent timestamp)
         % All motion analysis figures now go to unified 'Rotate_Clamp' directory
@@ -647,7 +902,7 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         """
         # Send parameters to MATLAB 
-        @mput rotation_angle_rad Ntheta last_solved_trajectory sol_number xp_suffix yp_suffix xp yp rod_mode train_ratio
+        @mput rotation_angle_rad Ntheta last_solved_trajectory sol_number xp_suffix yp_suffix xp yp rod_mode
         
         # Execute the main MATLAB solver algorithm with error detection
         # This replicates  AA_Rotate_Clamp_FixedTip.m
@@ -731,9 +986,39 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         % Setup figures folder for saving plots (using consistent timestamp)
         figures_base = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Rotate_Clamp', 'Rotated_Clamp', 'Figures');
         
-        % Use xp_suffix and yp_suffix passed from Julia (don't regenerate)
-        xp_str = xp_suffix;  % Use Julia-generated suffix
-        yp_str = yp_suffix;  % Use Julia-generated suffix
+        % Recreate xp_str and yp_str variables for figure naming (using passed xp, yp, mode values)
+        % Format xp value for folder naming (e.g., 0.2 -> X02, 0.5 -> X05, -0.2 -> XN02)
+        xp_scaled = abs(round(xp * 10));
+        if xp >= 0
+            if xp_scaled < 10
+                xp_str = sprintf('X0%d', xp_scaled);
+            else
+                xp_str = sprintf('X%d', xp_scaled);
+            end
+        else
+            % Handle negative values
+            if xp_scaled < 10
+                xp_str = sprintf('XN0%d', xp_scaled);
+            else
+                xp_str = sprintf('XN%d', xp_scaled);
+            end
+        end
+        
+        % Format yp value for folder naming (e.g., 0.0 -> Y00, 0.5 -> Y05, -0.3 -> YN03)
+        yp_scaled = round(abs(yp) * 10);
+        if yp >= 0
+            if yp_scaled < 10
+                yp_str = sprintf('Y0%d', yp_scaled);
+            else
+                yp_str = sprintf('Y%d', yp_scaled);
+            end
+        else
+            if yp_scaled < 10
+                yp_str = sprintf('YN0%d', yp_scaled);
+            else
+                yp_str = sprintf('YN%d', yp_scaled);
+            end
+        end
         
         % Create folder name with timestamp, mode, xp and yp identifiers
         figures_folder_name = sprintf('%s_mode_%d_%s_%s', timestamp_str, rod_mode, xp_str, yp_str);
@@ -979,16 +1264,9 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
                     % Create subset for saving (keep original DataSet for continued computation)
                     DataSetSaved = DataSet(1:i, :);
                     
-                    % Construct parametric output filename (no train_ratio suffix for main dataset)
+                    % Construct parametric output filename
                     output_filename = ['LearnigData_Rod_Clamp_Pin_Rot_' xp_suffix '_' yp_suffix '_' num2str(Ntheta) 'sols_mode' num2str(rod_mode) '.mat'];
-                    output_file = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Learning DataSet', output_filename);
-                    
-                    % Ensure the Learning DataSet directory exists
-                    output_dir = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Learning DataSet');
-                    if ~exist(output_dir, 'dir')
-                        mkdir(output_dir);
-                        fprintf('✓ Created Learning DataSet directory: %s\\n', output_dir);
-                    end
+                    output_file = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', output_filename);
                     
                     % Save the subset (using temporary variable name)
                     DataSet_temp = DataSetSaved;
@@ -1074,10 +1352,10 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         # If workspace retrieval failed, try to load the saved file directly
         if !saved_dataset_retrieved && last_solved_trajectory < Int(Ntheta) + 1
             try
-                # Construct the expected filename (no train_ratio suffix for main dataset)
+                # Construct the expected filename
                 @mget project_root xp_suffix yp_suffix Ntheta rod_mode
                 filename = "LearnigData_Rod_Clamp_Pin_Rot_$(xp_suffix)_$(yp_suffix)_$(Int(Ntheta))sols_mode$(Int(rod_mode)).mat"
-                filepath = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Learning DataSet", filename)
+                filepath = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", filename)
                 
                 # Add delay to allow file system to complete write operation
                 println("⏳ Waiting for file system to complete save operation...")
@@ -1135,10 +1413,20 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         % FIRST PRIORITY: Save dataset if it exists (before any other operations)
         fprintf('\\n=== DATASET SAVE CHECK ===\\n');
         
-        % Use xp_suffix and yp_suffix passed from Julia (don't regenerate)
-        % These were already correctly generated using Julia logic
-        xp_str = xp_suffix;  % Use Julia-generated suffix
-        yp_str = yp_suffix;  % Use Julia-generated suffix
+        % Define xp_str and yp_str variables first (before any usage)
+        % Format xp value for folder naming (e.g., 0.2 -> X02, 0.5 -> X05, -0.2 -> XN02)
+        if xp >= 0
+            xp_str = sprintf('X%02d', round(xp*10));
+        else
+            xp_str = sprintf('XN%02d', round(abs(xp)*10));
+        end
+        
+        % Format yp value for folder naming (e.g., 0.0 -> Y00, 0.5 -> Y05, -0.3 -> YN03)
+        if yp >= 0
+            yp_str = sprintf('Y%02d', round(yp*10));
+        else
+            yp_str = sprintf('YN%02d', round(abs(yp)*10));
+        end
         
         if exist('DataSet', 'var') && ~isempty(DataSet) && size(DataSet, 1) > 0
             actual_trajectories = size(DataSet, 1);
@@ -1162,21 +1450,21 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
             end
             
             if save_needed
-                % Construct parametric output filename (no train_ratio suffix for main dataset)
+                % Construct parametric output filename
                 output_filename = ['LearnigData_Rod_Clamp_Pin_Rot_' xp_suffix '_' yp_suffix '_' num2str(Ntheta) 'sols_mode' num2str(rod_mode) '.mat'];
-                output_file = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Learning DataSet', output_filename);
+                output_file = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', output_filename);
                 
                 fprintf('Output filename: %s\\n', output_filename);
                 fprintf('Full path: %s\\n', output_file);
                 fprintf('Saving to: %s\\n', output_file);
                 
-                % Ensure the Learning DataSet directory exists
-                output_dir = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Learning DataSet');
+                % Ensure the directory exists
+                [output_dir, ~, ~] = fileparts(output_file);
                 if ~exist(output_dir, 'dir')
                     mkdir(output_dir);
-                    fprintf('✓ Created Learning DataSet directory: %s\\n', output_dir);
+                    fprintf('✓ Created directory: %s\\n', output_dir);
                 else
-                    fprintf('✓ Learning DataSet directory exists: %s\\n', output_dir);
+                    fprintf('✓ Directory exists: %s\\n', output_dir);
                 end
                 
                 % Save the complete dataset (using temporary variable name)
@@ -1403,16 +1691,9 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         
         % Only save final dataset if save_at_step was set to full rotation
         if last_solved_trajectory == (Ntheta+1)
-            % Construct parametric output filename (no train_ratio suffix for main dataset)
+            % Construct parametric output filename
             output_filename = ['LearnigData_Rod_Clamp_Pin_Rot_' xp_suffix '_' yp_suffix '_' num2str(Ntheta) 'sols_mode' num2str(rod_mode) '.mat'];
-            output_file = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Learning DataSet', output_filename);
-            
-            % Ensure the Learning DataSet directory exists
-            output_dir = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', 'Learning DataSet');
-            if ~exist(output_dir, 'dir')
-                mkdir(output_dir);
-                fprintf('✓ Created Learning DataSet directory: %s\\n', output_dir);
-            end
+            output_file = fullfile(project_root, 'dataset', 'MATLAB code', 'Learning_Data_ClampedPinned_Rod_IK', output_filename);
             
             % For full rotation save, include all trajectories
             save(output_file, 'DataSet');
@@ -1501,10 +1782,10 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
         dataset_file_exists = false
         
         try
-            # Check if the expected output file was created (no train_ratio suffix for main dataset)
+            # Check if the expected output file was created
             @mget project_root xp_suffix yp_suffix Ntheta rod_mode
             expected_filename = "LearnigData_Rod_Clamp_Pin_Rot_$(xp_suffix)_$(yp_suffix)_$(Int(Ntheta))sols_mode$(Int(rod_mode)).mat"
-            expected_filepath = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Learning DataSet", expected_filename)
+            expected_filepath = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", expected_filename)
             
             if isfile(expected_filepath)
                 dataset_file_exists = true
@@ -1561,9 +1842,9 @@ function clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothi
                 println("\n⚠️  SOLVER INTERRUPTED BY USER")
                 println("✓ Checking for partial results...")
                 
-                # Check if dataset was saved despite interruption (no train_ratio suffix for main dataset)
-                expected_file = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", "Learning DataSet",
-                                       "LearnigData_Rod_Clamp_Pin_Rot_$(xp_suffix)_$(yp_suffix)_$(Ntheta)sols_mode$(Int(rod_mode)).mat")
+                # Check if dataset was saved despite interruption
+                expected_file = joinpath(project_root, "dataset", "MATLAB code", "Learning_Data_ClampedPinned_Rod_IK", 
+                                       "LearnigData_Rod_Clamp_Pin_Rot_$(xp_suffix)_$(yp_suffix)_72sol_mod$(mode).mat")
                 
                 if isfile(expected_file)
                     println("✅ SUCCESS: Dataset was saved before interruption!")
@@ -1612,8 +1893,7 @@ end
 
 # Run example only when file is executed directly (not when included)
 # NOTE: This auto-execution is disabled when used in pipeline scripts
-if (!@isdefined(__SOLVER_ALREADY_LOADED__) && !@isdefined(__PIPELINE_ALREADY_LOADED__) && 
-    (abspath(PROGRAM_FILE) == @__FILE__))
+if !@isdefined(__CLAMP_SOLVER_ALREADY_LOADED__) && abspath(PROGRAM_FILE) == @__FILE__
     # Define a flag to indicate we've loaded this module
     global __CLAMP_SOLVER_ALREADY_LOADED__ = true
     
@@ -1630,7 +1910,7 @@ if (!@isdefined(__SOLVER_ALREADY_LOADED__) && !@isdefined(__PIPELINE_ALREADY_LOA
 
     # Or with custom config (example):
     println("⚙️  Using custom example configuration ")
-    custom_config = create_config(xp = 0.5, yp = 0.0, save_figures = false)
+    custom_config = create_config(xp = 0.8, yp = 0.0)
     success = clamp_fixed_rod_solver(custom_config)
 
     println()  # Empty line for better readability
@@ -1640,4 +1920,170 @@ if (!@isdefined(__SOLVER_ALREADY_LOADED__) && !@isdefined(__PIPELINE_ALREADY_LOA
     else
         println("✗ Solver encountered errors!")
     end
+    
+# If you want to see when the module is loaded silently, uncomment the next 3 lines:
+# else
+#     println(" Module loaded: clamp_fixed_rod_solver function available")
+#     println(" (Script execution skipped - use solve_and_prepare_data.jl for custom configs)")
 end
+````
+</attachment>
+
+</attachments>
+<prompt>
+What about standalone mode and module mode?
+</prompt>
+~~~
+
+
+
+## Response
+### Assistant
+~~~md
+## Standalone Mode vs Module Mode in `clamp_fixed_rod_solver.jl`
+
+### Overview
+The solver is designed to work in two distinct modes:
+
+1. **Standalone Mode**: When run directly as a script
+2. **Module Mode**: When included/imported by other scripts
+
+### Mode Detection Mechanism
+
+````julia
+# Mode detection logic at the end of the file
+if !@isdefined(__CLAMP_SOLVER_ALREADY_LOADED__) && abspath(PROGRAM_FILE) == @__FILE__
+    # STANDALONE MODE
+    global __CLAMP_SOLVER_ALREADY_LOADED__ = true
+    # ... execution code ...
+else
+    # MODULE MODE (silent loading)
+end
+````
+
+### Standalone Mode
+
+**When activated**: Running directly from command line or REPL
+```bash
+julia clamp_fixed_rod_solver.jl
+```
+
+**What happens**:
+1. Sets up project environment
+2. Activates Julia environment
+3. Runs example with custom configuration
+4. Prints detailed output and status
+
+**Key features**:
+````julia
+# Setup project environment (only when run directly)
+project_root = setup_project_environment(activate_env = true, instantiate = false)
+println("🔧 Project environment activated: $project_root")
+
+# Run with example configuration
+custom_config = create_config(xp = 0.8, yp = 0.0)
+success = clamp_fixed_rod_solver(custom_config)
+````
+
+### Module Mode
+
+**When activated**: Including from another script
+```julia
+include("src/solvers/clamp_fixed_rod_solver.jl")
+```
+
+**What happens**:
+1. Loads function definitions silently
+2. Makes `clamp_fixed_rod_solver()` available
+3. No automatic execution
+4. No environment activation
+
+**Usage example**:
+````julia
+# In another script (e.g., solve_and_prepare_data.jl)
+include("../utils/project_utils.jl")
+include("../utils/config.jl")
+include("../solvers/clamp_fixed_rod_solver.jl")
+
+# Now use the function
+config = create_config(xp = 0.5, mode = 3.0)
+success = clamp_fixed_rod_solver(config)
+````
+
+### Key Differences
+
+| Aspect | Standalone Mode | Module Mode |
+|--------|----------------|-------------|
+| **Environment Setup** | Automatic | Manual (by calling script) |
+| **Execution** | Runs example automatically | No automatic execution |
+| **Output** | Verbose with status messages | Silent loading |
+| **Configuration** | Uses hardcoded example | Fully customizable |
+| **Use Case** | Quick testing/demo | Part of larger workflow |
+
+### Conditional Includes
+
+The file handles dependencies intelligently:
+
+````julia
+# Setup for standalone usage (when run directly)
+if !@isdefined(ClampedRodConfig)
+    include("../utils/project_utils.jl")
+    include("../utils/config.jl")
+end
+````
+
+This ensures:
+- **Standalone**: Loads required dependencies
+- **Module**: Assumes dependencies already loaded (avoids duplicates)
+
+### Benefits of This Design
+
+1. **Flexibility**: Same code works in multiple contexts
+2. **Testing**: Easy to test solver independently
+3. **Integration**: Clean integration into pipelines
+4. **No Duplication**: Avoids redefining functions/types
+5. **Clear Separation**: Execution logic separated from function definitions
+
+### Practical Examples
+
+**Standalone Usage** (for testing):
+```bash
+# Quick test with default parameters
+julia src/solvers/clamp_fixed_rod_solver.jl
+```
+
+**Module Usage** (in pipeline):
+```julia
+# In a batch processing script
+configs = [
+    create_config(xp = 0.2, mode = 2.0),
+    create_config(xp = 0.5, mode = 2.0),
+    create_config(xp = 0.8, mode = 3.0)
+]
+
+for config in configs
+    success = clamp_fixed_rod_solver(config)
+    println("Config xp=$(config.xp): $(success ? "✓" : "✗")")
+end
+```
+
+### Guard Variable
+
+The `__CLAMP_SOLVER_ALREADY_LOADED__` guard prevents:
+- Multiple executions when included multiple times
+- Conflicts in complex include hierarchies
+- Unintended re-runs of example code
+
+This dual-mode design makes the solver both user-friendly for quick tests and professional for integration into larger systems.
+~~~
+
+
+<style>
+[id^="system"], [id^="user"], [id^="assistant"] {
+		margin: 4px 0 4px 0;
+}
+
+.markdown-body > pre {
+		padding: 4px 16px;
+}
+</style>

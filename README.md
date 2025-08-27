@@ -59,7 +59,7 @@ config = create_config(
 )
 
 # Run complete 3-step pipeline:
-# 1. Generate initial rod shape (elliptical_rod_solver)
+# 1. Generate initial rod shape (initial_rod_solver)
 # 2. Generate rotation learning data (clamp_fixed_rod_solver) 
 # 3. Split dataset for training/testing (dataset_splitter)
 success = solve_and_prepare_data(config)
@@ -67,7 +67,7 @@ success = solve_and_prepare_data(config)
 if success
     println("✅ Pipeline completed successfully!")
     println("📊 Training/testing datasets ready for machine learning")
-    println("📁 Check dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Learning_DataSet/")
+    println("📁 Check dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Learning DataSet/")
 else
     println("❌ Pipeline failed - check logs for details")
 end
@@ -77,7 +77,7 @@ end
 
 ```julia
 # Step 1: Generate initial rod shape
-success1 = elliptical_rod_solver(config)
+success1 = initial_rod_solver(config)
 
 # Step 2: Generate rotation learning data (72 trajectories)
 success2 = clamp_fixed_rod_solver(config)
@@ -193,8 +193,8 @@ success = solve_and_prepare_data(config)
 if success
     # Load and analyze generated datasets
     base_name = "LearnigData_Rod_Clamp_Pin_Rot_X03_Y01_mod2"
-    train_path = "dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Learning_DataSet/$(base_name)_train_085.jld2"
-    test_path = "dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Learning_DataSet/$(base_name)_test_015.jld2"
+    train_path = "dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Learning DataSet/$(base_name)_train_085.jld2"
+    test_path = "dataset/MATLAB code/Learning_Data_ClampedPinned_Rod_IK/Learning DataSet/$(base_name)_test_015.jld2"
     
     # Load datasets
     train_data = load(train_path, "DataSet_train")
@@ -222,7 +222,7 @@ Input: Configuration (xp, yp, mode, train_ratio, etc.)
     ↓
 ┌─────────────────────────────────────────────────────────────┐
 │ STEP 1: Generate Initial Rod Shape                          │
-│ • elliptical_rod_solver()                                   │
+│ • initial_rod_solver()                                      │
 │ • Solves inverse kinematics using numerical methods         │
 │ • Generates: CLampedPinnedRod_sol_X_mode_Y_ZZZ.mat          │
 │ • Creates: Initial rod shape figures                        │
@@ -320,8 +320,8 @@ PIPELINE EXECUTION LOG:
 ================================================================================
 [2025-08-22 14:30:52] COMPLETE ROD SOLVER PIPELINE
 [2025-08-22 14:30:52] STEP 1: Generating initial rod shape...
-[2025-08-22 14:30:53] 🔄 Starting elliptical_rod_solver...
-[2025-08-22 14:32:15] ✓ elliptical_rod_solver completed successfully (Duration: 82.5s)
+[2025-08-22 14:30:53] 🔄 Starting initial_rod_solver...
+[2025-08-22 14:32:15] ✓ initial_rod_solver completed successfully (Duration: 82.5s)
 ...
 ================================================================================
 PIPELINE COMPLETED
@@ -359,7 +359,7 @@ ClampedPinnedRodSolver/
 │   │   ├── dataset_splitter.jl          # Training/testing data splitting
 │   │   └── run_clamp_solver_standalone.jl # Isolated clamp solver
 │   ├── solvers/
-│   │   ├── elliptical_rod_solver.jl     # Step 1: Initial rod shape
+│   │   ├── initial_rod_solver.jl         # Step 1: Initial rod shape
 │   │   └── clamp_fixed_rod_solver.jl    # Step 2: Rotation data generation
 │   └── utils/
 │       ├── project_utils.jl             # Project environment utilities
@@ -379,7 +379,7 @@ ClampedPinnedRodSolver/
 │   ├── quick_figure_test.jl             # Figure generation tests
 │   ├── simple_config_test.jl            # Configuration tests
 │   ├── test_clamp_fixed_rod_solver.jl   # Clamp solver tests
-│   ├── test_elliptical_rod_solver.jl    # Elliptical solver tests
+│   ├── test_initial_rod_solver.jl       # Initial solver tests
 │   ├── test_figure_config.jl            # Figure configuration tests
 │   ├── test_utils.jl                    # Utility function tests
 │   ├── validate_structure.jl            # Project structure validation
@@ -391,7 +391,7 @@ ClampedPinnedRodSolver/
 │       └── Learning_Data_ClampedPinned_Rod_IK/
 │           ├── Find_Initial_Rod_Shape/    # Step 1 outputs
 │           ├── Rotate_Clamp/              # Step 2 outputs  
-│           └── Learning_DataSet/          # Step 3 outputs (ML-ready)
+│           └── Learning DataSet/          # Step 3 outputs (ML-ready)
 ├── figures/                             # Generated figure outputs
 ├── logs/                                # Pipeline execution logs
 └── resources/                           # Project resources
@@ -401,7 +401,7 @@ ClampedPinnedRodSolver/
 
 **Core Pipeline:**
 - `solve_and_prepare_data.jl`: Main 3-step pipeline orchestrator
-- `elliptical_rod_solver.jl`: Initial rod shape generation (Step 1)
+- `initial_rod_solver.jl`: Initial rod shape generation (Step 1)
 - `clamp_fixed_rod_solver.jl`: Rotation learning data generation (Step 2) 
 - `dataset_splitter.jl`: Training/testing dataset preparation (Step 3)
 
@@ -431,7 +431,7 @@ dataset/MATLAB code/
     │   ├── Functions/                   # Helper functions
     │   ├── Rotated_Clamp/               # Generated rotation data
     │   └── Rotated_Clamp_Ref/           # Reference rotation data
-    ├── Learning_DataSet/                # Step 3: ML-ready datasets
+    ├── Learning DataSet/                # Step 3: ML-ready datasets
     │   ├── LearnigData_Rod_*_72sol_*.mat           # Full rotation datasets
     │   ├── *_train_*.{jld2,mat}                    # Training sets
     │   └── *_test_*.{jld2,mat}                     # Testing sets
@@ -493,7 +493,7 @@ For configuration: `xp=0.2, yp=0.0, mode=2, train_ratio=0.85`
 CLampedPinnedRod_sol_1_mode_2_X02_Y00.mat
 
 # Step 2  
-LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_72sol_mod2.mat
+LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_72sols_mode2.mat
 
 # Step 3
 LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_mod2_train_085.jld2
@@ -519,7 +519,7 @@ LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_mod2_test_015.mat
 - `split_dataset_for_training(config)`: Split datasets for ML training (Step 3)
 
 ### Individual Solvers  
-- `elliptical_rod_solver(config)`: Generate initial rod shape (Step 1)
+- `initial_rod_solver(config)`: Generate initial rod shape (Step 1)
 - `clamp_fixed_rod_solver(config)`: Generate rotation learning data (Step 2)
 
 ### Project Utilities
@@ -582,7 +582,7 @@ include("test/example_usage.jl")
 
 ### Solvers
 
-- `elliptical_rod_solver(config)`: Solve rod inverse kinematics
+- `initial_rod_solver(config)`: Solve rod inverse kinematics
 - `clamp_fixed_rod_solver(config)`: Generate rotated clamp datasets
 
 ### Utilities

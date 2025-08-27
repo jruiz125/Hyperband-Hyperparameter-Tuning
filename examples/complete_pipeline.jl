@@ -15,7 +15,7 @@ config = create_config(
 )
 
 # Run complete 3-step pipeline:
-    # 1. Generate initial rod shape (elliptical_rod_solver)
+    # 1. Generate initial rod shape (initial_rod_solver)
     # 2. Generate rotation learning data (clamp_fixed_rod_solver) 
     # 3. Split dataset for training/testing (dataset_splitter)
 success = solve_and_prepare_data(config)

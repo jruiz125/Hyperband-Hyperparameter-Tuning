@@ -16,7 +16,7 @@ println("Current directory: $current_dir")
 # Check if test files exist
 test_files = [
     "test/runtests.jl",
-    "test/test_elliptical_rod_solver.jl", 
+    "test/test_initial_rod_solver.jl", 
     "test/test_utils.jl",
     "test/README.md"
 ]
@@ -36,7 +36,7 @@ end
 source_files = [
     "src/utils/config.jl",
     "src/utils/project_utils.jl",
-    "src/solvers/elliptical_rod_solver.jl"
+    "src/solvers/initial_rod_solver.jl"
 ]
 
 println("\n--- Checking source files ---")

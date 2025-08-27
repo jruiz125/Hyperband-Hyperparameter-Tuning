@@ -3,19 +3,27 @@
 # 
 # Can be run standalone or used through the ClampFixedRodSolver module
 # ---------------------------------------------------------------------------
+# Set this to true to force execution when using VSCode
+if !@isdefined(FORCE_STANDALONE_EXECUTION)
+    const FORCE_STANDALONE_EXECUTION = true
+end
 
 using Dates
 
 # Setup for standalone usage (when run directly, not when included in module)
-if abspath(PROGRAM_FILE) == abspath(@__FILE__) && !@isdefined(ClampedRodConfig)
+if (abspath(PROGRAM_FILE) == abspath(@__FILE__) || FORCE_STANDALONE_EXECUTION) && !@isdefined(ClampedRodConfig)
     include("../utils/project_utils.jl")
     include("../utils/config.jl")
     
     # Setup project environment for standalone mode
     project_root = setup_project_environment(activate_env = true, instantiate = false)
     
+    # Set pipeline flag BEFORE including solvers to prevent their standalone execution
+    # This flag indicates we're running the complete pipeline, not individual solvers
+    global __PIPELINE_ALREADY_LOADED__ = true
+    
     # Include solver functions for standalone mode
-    include("../solvers/elliptical_rod_solver.jl")
+    include("../solvers/initial_rod_solver.jl")
     include("../solvers/clamp_fixed_rod_solver.jl")
 end
 
@@ -32,8 +40,37 @@ This is called when capture_all_output=true.
 function run_with_complete_capture_integrated(config, log_dir)
     # Generate log filename
     timestamp = Dates.format(now(), "yyyymmdd_HHMMSS")
-    xp_str = replace(string(config.xp), "." => "", "-" => "neg")
-    yp_str = replace(string(config.yp), "." => "", "-" => "neg")
+    # Fix floating-point precision issues by rounding and scaling
+    # Use same format as dataset_splitter (with zero padding for single digits)
+    xp_scaled = abs(round(config.xp * 10))
+    if config.xp >= 0
+        if xp_scaled < 10
+            xp_str = "0$(Int(xp_scaled))"
+        else
+            xp_str = "$(Int(xp_scaled))"
+        end
+    else
+        if xp_scaled < 10
+            xp_str = "neg0$(Int(xp_scaled))"
+        else
+            xp_str = "neg$(Int(xp_scaled))"
+        end
+    end
+    
+    yp_scaled = abs(round(config.yp * 10))
+    if config.yp >= 0
+        if yp_scaled < 10
+            yp_str = "0$(Int(yp_scaled))"
+        else
+            yp_str = "$(Int(yp_scaled))"
+        end
+    else
+        if yp_scaled < 10
+            yp_str = "neg0$(Int(yp_scaled))"
+        else
+            yp_str = "neg$(Int(yp_scaled))"
+        end
+    end
     mode_str = replace(string(Int(config.mode)), "." => "")
     
     log_filename = "RodSolver_CompleteREPL_X$(xp_str)_Y$(yp_str)_mode$(mode_str)_$(timestamp).log"
@@ -114,14 +151,14 @@ function execute_pipeline_steps(config)
     println("="^60)
     println("STEP 1: Generating initial rod shape...")
     println("="^60)
-    println("🔄 Starting elliptical_rod_solver...")
+    println("🔄 Starting initial_rod_solver...")
     
     # Step 1: Generate initial rod shape
     try
-        success1 = elliptical_rod_solver(config)
+        success1 = initial_rod_solver(config)
         
         if !success1
-            println("✗ elliptical_rod_solver failed")
+            println("✗ initial_rod_solver failed")
             println("✗ Failed to generate initial rod shape")
             return false
         end
@@ -129,7 +166,7 @@ function execute_pipeline_steps(config)
         println("✅ Initial rod shape generated successfully")
         
     catch e
-        println("✗ Error in elliptical_rod_solver: $e")
+        println("✗ Error in initial_rod_solver: $e")
         return false
     end
     
@@ -195,7 +232,7 @@ end
 Complete pipeline to generate initial rod shape and learning data for a given configuration.
 
 This function combines three steps:
-1. Generates the initial rod shape using elliptical integrals (elliptical_rod_solver)
+1. Generates the initial rod shape using elliptical integrals (initial_rod_solver)
 2. Creates rotational learning data using the generated shape (clamp_fixed_rod_solver)
 3. Splits the dataset into training and testing sets (split_dataset_for_training)
 
@@ -279,9 +316,9 @@ function solve_and_prepare_data(config; enable_logging=true, log_dir="logs", cap
     
     try
         success1 = if log_capture !== nothing
-            capture_function_output(log_capture, elliptical_rod_solver, config, func_name="elliptical_rod_solver")
+            capture_function_output(log_capture, initial_rod_solver, config, func_name="initial_rod_solver")
         else
-            elliptical_rod_solver(config)
+            initial_rod_solver(config)
         end
         
         if !success1
@@ -295,7 +332,7 @@ function solve_and_prepare_data(config; enable_logging=true, log_dir="logs", cap
         safe_log_println("✓ Initial rod shape generated successfully")
         
     catch e
-        safe_log_println("✗ Error in elliptical_rod_solver: $e")
+        safe_log_println("✗ Error in initial_rod_solver: $e")
         if log_capture !== nothing
             finalize_logging(log_capture)
         end
@@ -365,15 +402,26 @@ function solve_and_prepare_data(config; enable_logging=true, log_dir="logs", cap
     safe_log_println("Working directory: $(pwd())")
     
     # Generate the same filenames as in dataset_splitter for display
-    xp_str = replace(string(config.xp), "." => "", "-" => "neg")
-    yp_str = replace(string(config.yp), "." => "", "-" => "neg")
+    # Fix floating-point precision issues by rounding and scaling
+    xp_str = string(round(Int, config.xp * 10))
+    if config.xp < 0
+        xp_str = "neg" * xp_str
+    end
+    yp_str = string(round(Int, config.yp * 10))
+    if config.yp < 0
+        yp_str = "neg" * yp_str
+    end
     mode_str = replace(string(Int(config.mode)), "." => "")
     
     # Format train/test ratios for filenames 
-    train_ratio_str = replace(string(round(config.train_ratio, digits=3)), "." => "")
-    test_ratio_str = replace(string(round(1.0 - config.train_ratio, digits=3)), "." => "")
+    # Ensure consistent formatting: pad to 3 digits (e.g., 0.85 -> "085", 0.9 -> "090")
+    train_ratio_str = lpad(string(round(Int, config.train_ratio * 100)), 3, '0')
+    test_ratio_str = lpad(string(round(Int, (1.0 - config.train_ratio) * 100)), 3, '0')
     
-    base_filename = "LearnigData_Rod_Clamp_Pin_Rot_X$(xp_str)_Y$(yp_str)_mode$(mode_str)"
+    base_filename = "LearnigData_Rod_Clamp_Pin_Rot_X$(xp_str)_Y$(yp_str)_$(config.angular_steps)sols_mode$(mode_str)"
+    
+    # The main dataset filename (contains all trajectories, no train_ratio suffix)
+    full_dataset_filename = "$(base_filename).mat"
     
     # Generate rod filename from elliptical solver
     sol_number = config.sol_number
@@ -387,7 +435,7 @@ function solve_and_prepare_data(config; enable_logging=true, log_dir="logs", cap
     safe_log_println("    - Figures: Rod_Configuration_plots_[timestamp]/ (folder)")
     
     safe_log_println("  🔸 Step 2 (Rotation Learning Data):")
-    safe_log_println("    - Full dataset: $(base_filename).mat")
+    safe_log_println("    - Full dataset: $(full_dataset_filename) (saved in Learning DataSet folder)")
     
     safe_log_println("  🔸 Step 3 (Training/Testing Split):")
     safe_log_println("    • Training Set ($(round(Int, config.train_ratio*100))%):")
@@ -405,12 +453,14 @@ function solve_and_prepare_data(config; enable_logging=true, log_dir="logs", cap
     return true
 end
 
-# Only run this code when script is executed directly (not when included in module)
-if abspath(PROGRAM_FILE) == abspath(@__FILE__)
+# Run example only when file is executed directly (not when included)
+# NOTE: This auto-execution is disabled when used in pipeline scripts
+const THIS_FILE = @__FILE__
+if @isdefined(__PIPELINE_ALREADY_LOADED__) && (abspath(PROGRAM_FILE) == THIS_FILE || FORCE_STANDALONE_EXECUTION)
     println("Starting complete rod solver pipeline with logging...")
     
     # Create custom config for xp = 0.2 (with logging enabled by default)
-    custom_config = create_config(xp = 0.2, yp = 0.0, mode = 2, train_ratio = 0.85)
+    custom_config = create_config(xp = 0.5, yp = 0.0, mode = 2, train_ratio = 0.85)
 
     # Run the complete pipeline with logging enabled
     # Note: Complete REPL capture is now handled globally at the top of the script
@@ -428,5 +478,10 @@ if abspath(PROGRAM_FILE) == abspath(@__FILE__)
         println("✗ PIPELINE FAILED - Check error messages above and log file")
         println("="^60)
     end
+
+# If you want to see when the module is loaded silently, uncomment the next 3 lines:
+# else
+#     println(" Module loaded: solve_and_prepare_data functions available")
+#     println(" (Script execution skipped - call solve_and_prepare_data() manually for custom configs)")
 end
 

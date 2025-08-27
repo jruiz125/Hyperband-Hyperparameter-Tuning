@@ -9,14 +9,14 @@
 push!(LOAD_PATH, joinpath(@__DIR__, ".."))
 
 # Include required modules
-include("test_elliptical_rod_solver.jl")
+include("test_initial_rod_solver.jl")
 
 println("=== Example: Using Simplified Elliptical Rod Solver ===\n")
 
 # Example 1: Using default configuration
 println("--- Example 1: Default Configuration ---")
 try
-    success, results = elliptical_rod_solver_no_comparison()
+    success, results = initial_rod_solver_no_comparison()
     
     if success
         println("✓ Solver completed successfully!")
@@ -45,7 +45,7 @@ try
         mode = 2.0     # Buckling mode
     )
     
-    success, results = elliptical_rod_solver_no_comparison(custom_config)
+    success, results = initial_rod_solver_no_comparison(custom_config)
     
     if success
         println("✓ Custom solver completed successfully!")

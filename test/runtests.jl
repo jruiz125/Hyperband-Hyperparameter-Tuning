@@ -16,13 +16,13 @@ project_root = setup_project_environment(activate_env=true, instantiate=false)
 include("test_utils.jl")
 
 # Include the test modules
-include("test_elliptical_rod_solver.jl")
+include("test_initial_rod_solver.jl")
 include("test_clamp_fixed_rod_solver.jl")
 
 # Run all test suites
 @testset "ClampFixedRodSolver Tests" begin
     @testset "Elliptical Rod Solver" begin
-        test_elliptical_rod_solver()
+        test_initial_rod_solver()
     end
     
     @testset "Clamp Fixed Rod Solver" begin

@@ -34,7 +34,7 @@ include("utils/project_utils.jl")
 include("utils/config.jl")
 
 # Include solver modules
-include("solvers/elliptical_rod_solver.jl")
+include("solvers/initial_rod_solver.jl")
 include("solvers/clamp_fixed_rod_solver.jl")
 
 # Include MATLAB-dependent script functions
@@ -54,7 +54,7 @@ export ClampedRodConfig,
        get_figure_save_options
 
 # Export main solver functions
-export elliptical_rod_solver,
+export initial_rod_solver,
        clamp_fixed_rod_solver,
        solve_and_prepare_data
 

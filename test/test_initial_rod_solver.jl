@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------
-# Tests for elliptical_rod_solver function
+# Tests for initial_rod_solver function
 # 
 # This module contains tests for the elliptical rod solver, including a 
 # simplified version of the solver function without reference comparison.
@@ -17,7 +17,7 @@ include("../src/utils/project_utils.jl")
 include("../src/utils/config.jl")
 
 """
-    elliptical_rod_solver_no_comparison(config::Union{ClampedRodConfig, Nothing} = nothing)
+    initial_rod_solver_no_comparison(config::Union{ClampedRodConfig, Nothing} = nothing)
 
 Simplified version of the elliptical rod solver without reference comparison.
 This function is used for testing purposes and returns the computed solution results.
@@ -26,7 +26,7 @@ Returns:
 - success::Bool: Whether the computation was successful
 - results::Dict: Dictionary containing the computed results (IN_first, OUT_first, nsols)
 """
-function elliptical_rod_solver_no_comparison(config::Union{ClampedRodConfig, Nothing} = nothing)
+function initial_rod_solver_no_comparison(config::Union{ClampedRodConfig, Nothing} = nothing)
     try
         # Load configuration parameters
         if config === nothing
@@ -501,15 +501,15 @@ function elliptical_rod_solver_no_comparison(config::Union{ClampedRodConfig, Not
 end
 
 """
-    test_elliptical_rod_solver()
+    test_initial_rod_solver()
 
 Main test function that runs various tests for the elliptical rod solver.
 """
-function test_elliptical_rod_solver()
+function test_initial_rod_solver()
     println("\n=== TESTING ELLIPTICAL ROD SOLVER ===")
     
     @testset "Default Configuration Test" begin
-        success, results = elliptical_rod_solver_no_comparison()
+        success, results = initial_rod_solver_no_comparison()
         
         @test success == true
         
@@ -523,7 +523,7 @@ function test_elliptical_rod_solver()
     @testset "Custom Configuration Test" begin
         # Test with custom configuration
         custom_config = create_config(xp = 0.2, yp = 0.1, mode = 2.0)
-        success, results = elliptical_rod_solver_no_comparison(custom_config)
+        success, results = initial_rod_solver_no_comparison(custom_config)
         
         @test success == true
         @test haskey(results, "config")
@@ -545,8 +545,8 @@ function test_elliptical_rod_solver()
         # Test that running the same configuration twice gives the same result
         config = get_default_config()
         
-        success1, results1 = elliptical_rod_solver_no_comparison(config)
-        success2, results2 = elliptical_rod_solver_no_comparison(config)
+        success1, results1 = initial_rod_solver_no_comparison(config)
+        success2, results2 = initial_rod_solver_no_comparison(config)
         
         @test success1 == true
         @test success2 == true
@@ -570,7 +570,7 @@ function test_elliptical_rod_solver()
         ]
         
         for (i, config) in enumerate(configs_to_test)
-            success, results = elliptical_rod_solver_no_comparison(config)
+            success, results = initial_rod_solver_no_comparison(config)
             @test success == true
             @test results["nsols"] > 0
             

@@ -5,7 +5,7 @@ This directory contains comprehensive tests for the EllipticalRodSolver project.
 ## Structure
 
 - `runtests.jl` - Main test runner that executes all test suites
-- `test_elliptical_rod_solver.jl` - Tests for the main elliptical rod solver function
+- `test_initial_rod_solver.jl` - Tests for the main initial rod solver function
 - `test_clamp_fixed_rod_solver.jl` - Tests for the clamp fixed rod solver function
 - `test_utils.jl` - Utility functions and constants for testing
 - Future test files will be added here as the project grows
@@ -30,7 +30,7 @@ pkg> test
 ```julia
 # From the project root directory
 julia -e "using Pkg; Pkg.activate(\".\")"
-julia test/test_elliptical_rod_solver.jl
+julia test/test_initial_rod_solver.jl
 ```
 
 ## Test Categories
@@ -81,7 +81,7 @@ julia test/test_elliptical_rod_solver.jl
 ## Test Features
 
 ### Simplified Solver Function
-The tests use `elliptical_rod_solver_no_comparison()`, which is a simplified version of the main solver that:
+The tests use `initial_rod_solver_no_comparison()`, which is a simplified version of the main solver that:
 - Removes the reference comparison section
 - Saves test results to separate folders (`Rod_Shape_Test`)
 - Returns computed results in a structured dictionary

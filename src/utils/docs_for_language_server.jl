@@ -189,7 +189,7 @@ Get the default configuration for the clamped rod solver.
 config = get_default_config()
 
 # Use with solver
-results = elliptical_rod_solver(config)
+results = initial_rod_solver(config)
 
 # Modify default configuration
 config = get_default_config()
@@ -271,7 +271,7 @@ function get_figure_save_options end
 end
 
 """
-    elliptical_rod_solver(config=nothing; mode=2, xp=0.3, yp=0.0)
+    initial_rod_solver(config=nothing; mode=2, xp=0.3, yp=0.0)
 
 Solve the inverse kinematics problem for a flexible rod using elliptical integrals.
 
@@ -289,17 +289,17 @@ Solve the inverse kinematics problem for a flexible rod using elliptical integra
 # Examples
 ```julia
 # Basic usage
-results = elliptical_rod_solver()
+results = initial_rod_solver()
 
 # With custom parameters
-results = elliptical_rod_solver(mode=1, xp=0.5, yp=0.2)
+results = initial_rod_solver(mode=1, xp=0.5, yp=0.2)
 
 # With configuration object
 config = create_config(xp=0.3, yp=0.0)
-results = elliptical_rod_solver(config)
+results = initial_rod_solver(config)
 ```
 """
-function elliptical_rod_solver(config=nothing; mode=2, xp=0.3, yp=0.0)
+function initial_rod_solver(config=nothing; mode=2, xp=0.3, yp=0.0)
     # Implementation in ClampFixedRodSolver module - interfaces with MATLAB
 end
 
