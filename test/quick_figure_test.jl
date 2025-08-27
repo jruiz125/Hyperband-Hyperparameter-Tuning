@@ -4,7 +4,7 @@
 
 println("=== Testing Figure Configuration ===")
 
-using ClampFixedRodSolver
+using ClampedPinnedRodSolver
 
 println("1. Testing default configuration...")
 default_config = get_default_config()

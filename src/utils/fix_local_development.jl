@@ -14,8 +14,8 @@ println("Setting up local development environment...")
 
 # Remove the global package to avoid conflicts
 try
-    println("Removing global ClampFixedRodSolver package...")
-    Pkg.rm("ClampFixedRodSolver")
+    println("Removing global ClampedPinnedRodSolver package...")
+    Pkg.rm("ClampedPinnedRodSolver")
     println("✓ Global package removed")
 catch e
     println("Note: Global package not found or already removed")
@@ -39,5 +39,5 @@ catch e
 end
 
 println("\n🎉 Setup complete!")
-println("Now you can use: using ClampFixedRodSolver")
+println("Now you can use: using ClampedPinnedRodSolver")
 println("And Julia will use your local development copy.")

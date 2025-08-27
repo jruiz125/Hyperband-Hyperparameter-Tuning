@@ -1,5 +1,5 @@
 """
-    ClampFixedRodSolver
+    ClampedPinnedRodSolver
 
 A comprehensive module for solving the inverse kinematics of clamped-pinned rods 
 using elliptical integrals. This module provides both computational solvers and 
@@ -19,7 +19,7 @@ data preparation utilities for rod mechanics simulations.
 - Run tests with: `julia test/runtests.jl`
 - Test framework includes validation and consistency checks
 """
-module ClampFixedRodSolver
+module ClampedPinnedRodSolver
 
 # Core dependencies
 using MATLAB
@@ -69,9 +69,9 @@ Synchronize the documentation file (docs_for_language_server.jl) with exported f
 
 # Examples
 ```julia
-using ClampFixedRodSolver
-ClampFixedRodSolver.sync_docs()  # Add missing function docs
-ClampFixedRodSolver.sync_docs(force=true)  # Regenerate all docs
+using ClampedPinnedRodSolver
+ClampedPinnedRodSolver.sync_docs()  # Add missing function docs
+ClampedPinnedRodSolver.sync_docs(force=true)  # Regenerate all docs
 ```
 """
 function sync_docs(; force::Bool=false)

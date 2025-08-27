@@ -12,7 +12,7 @@
 if !@isdefined(ClampedRodConfig)
     # Running standalone - include the package
     push!(LOAD_PATH, dirname(@__DIR__))
-    using ClampFixedRodSolver
+    using ClampedPinnedRodSolver
 else
     println("Running as part of module")
 end

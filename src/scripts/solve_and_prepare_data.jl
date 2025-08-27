@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------
 # Complete Rod Solver Pipeline Script
 # 
-# Can be run standalone or used through the ClampFixedRodSolver module
+# Can be run standalone or used through the ClampedPinnedRodSolver module
 # ---------------------------------------------------------------------------
 # Set this to true to force execution when using VSCode
 if !@isdefined(FORCE_STANDALONE_EXECUTION)
@@ -460,7 +460,7 @@ if @isdefined(__PIPELINE_ALREADY_LOADED__) && (abspath(PROGRAM_FILE) == THIS_FIL
     println("Starting complete rod solver pipeline with logging...")
     
     # Create custom config for xp = 0.2 (with logging enabled by default)
-    custom_config = create_config(xp = 0.5, yp = 0.0, mode = 2, train_ratio = 0.85)
+    custom_config = create_config(xp = 0.2, yp = 0.0, mode = 2, train_ratio = 0.85)
 
     # Run the complete pipeline with logging enabled
     # Note: Complete REPL capture is now handled globally at the top of the script

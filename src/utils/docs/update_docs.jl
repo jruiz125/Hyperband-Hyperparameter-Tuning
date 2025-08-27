@@ -1,9 +1,9 @@
 #!/usr/bin/env julia
 """
-Automatic Documentation Synchronizer for ClampFixedRodSolver
+Automatic Documentation Synchronizer for ClampedPinnedRodSolver
 
 This script automatically updates docs_for_language_server.jl by:
-1. Reading exported functions from src/ClampFixedRodSolver.jl
+1. Reading exported functions from src/ClampedPinnedRodSolver.jl
 2. Comparing with existing documentation
 3. Adding missing function stubs with template docstrings
 4. Optionally extracting actual docstrings from source files
@@ -18,7 +18,7 @@ using Pkg
 using Base: @__DIR__
 
 # Configuration
-const MAIN_MODULE_FILE = joinpath(@__DIR__, "..", "..", "ClampFixedRodSolver.jl")
+const MAIN_MODULE_FILE = joinpath(@__DIR__, "..", "..", "ClampedPinnedRodSolver.jl")
 const DOCS_FILE = joinpath(@__DIR__, "..", "docs_for_language_server.jl")
 const SOURCE_DIRS = [
     joinpath(@__DIR__, "..", ".."),
@@ -211,7 +211,7 @@ function generate_template_docstring(func_name::Symbol)
 [AUTO-GENERATED] Documentation for $(func_name).
 
 # Description
-This function is part of the ClampFixedRodSolver package.
+This function is part of the ClampedPinnedRodSolver package.
 Please add detailed documentation here.
 
 # Arguments
@@ -326,7 +326,7 @@ function update_documentation_file(extract_docs::Bool = false, force_regenerate:
         # Create new file
         header = """
 \"\"\"
-Documentation stubs for ClampFixedRodSolver Language Server support.
+Documentation stubs for ClampedPinnedRodSolver Language Server support.
 
 This file provides function and type definitions that the Julia Language Server
 can understand for hover documentation and IntelliSense features.
@@ -366,7 +366,7 @@ function main()
         return
     end
     
-    println("ClampFixedRodSolver Documentation Updater")
+    println("ClampedPinnedRodSolver Documentation Updater")
     println("=" ^ 50)
     
     try

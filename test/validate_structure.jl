@@ -7,7 +7,7 @@
 
 using Test
 
-println("=== ClampFixedRodSolver Test Structure Validation ===\n")
+println("=== ClampedPinnedRodSolver Test Structure Validation ===\n")
 
 # Check if we're in the correct directory
 current_dir = pwd()

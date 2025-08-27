@@ -1,4 +1,4 @@
-# ClampFixedRodSolver.jl
+# ClampedPinnedRodSolver.jl
 
 ![Rotation Example](figures/rotation_example.png)
 
@@ -36,7 +36,7 @@ Then in Julia:
 ```julia
 using Pkg
 Pkg.instantiate()  # Install dependencies
-using ClampFixedRodSolver
+using ClampedPinnedRodSolver
 ```
 
 ## Quick Start
@@ -44,7 +44,7 @@ using ClampFixedRodSolver
 ### Complete Pipeline (Recommended)
 
 ```julia
-using ClampFixedRodSolver
+using ClampedPinnedRodSolver
 
 # Setup project environment
 project_root = setup_project_environment(activate_env=true)
@@ -55,13 +55,30 @@ config = create_config(
     yp = 0.0,           # Target y position
     mode = 2,           # Buckling mode
     train_ratio = 0.85, # 85% training, 15% testing
-    save_figures = true # Enable figure saving
+    save_figures = true, # Enable figure saving
+    capture_all_output = true, # True: Complete REPL capture including all stdout/stderr output
 )
 
+# 📖 FUNCTION DOCUMENTATION & HOVER SUPPORT
+
+# Due to MATLAB dependency conflicts, function hover/IntelliSense may not work
+# properly in this file. For full documentation with hover support:
+#
+# 1. Open: src/utils/docs_for_language_server.jl
+# 2. Hover over function names for complete documentation
+# 3. This file contains all function signatures without MATLAB dependencies
+#
+# Auto-open documentation file (uncomment if VS Code is your editor):
+run(`code "src/utils/docs_for_language_server.jl"`)
+
+println("📖 For function documentation with hover support:")
+println("   Open: src/utils/docs_for_language_server.jl")
+println("   This file provides full IntelliSense without MATLAB conflicts")
+
 # Run complete 3-step pipeline:
-# 1. Generate initial rod shape (initial_rod_solver)
-# 2. Generate rotation learning data (clamp_fixed_rod_solver) 
-# 3. Split dataset for training/testing (dataset_splitter)
+    # 1. Generate initial rod shape (initial_rod_solver)
+    # 2. Generate rotation learning data (clamp_fixed_rod_solver) 
+    # 3. Split dataset for training/testing (dataset_splitter)
 success = solve_and_prepare_data(config)
 
 if success
@@ -353,7 +370,7 @@ success = solve_and_prepare_data(config, enable_logging=false)
 ```
 ClampedPinnedRodSolver/
 ├── src/
-│   ├── ClampFixedRodSolver.jl      # Main module file
+│   ├── ClampedPinnedRodSolver.jl     # Main module file
 │   ├── scripts/
 │   │   ├── solve_and_prepare_data.jl    # Complete 3-step pipeline
 │   │   ├── dataset_splitter.jl          # Training/testing data splitting
@@ -662,8 +679,8 @@ The `ClampedRodConfig` structure includes:
 If you use this package in your research, please cite:
 
 ```bibtex
-@software{ruiz2025clampfixedrodsolver,
-  title={ClampFixedRodSolver.jl: A Julia Package for Clamped-Pinned Rod Inverse Kinematics},
+@software{ruiz2025clampedpinnedrodsolver,
+  title={ClampedPinnedRodSolver.jl: A Julia Package for Clamped-Pinned Rod Inverse Kinematics},
   author={Ruiz-Erezuma, José Luis and Altuzarra Maestre, Oscar},
   year={2025},
   url={https://github.com/jruiz125/Clamped-Pinned-Rod-Solver}

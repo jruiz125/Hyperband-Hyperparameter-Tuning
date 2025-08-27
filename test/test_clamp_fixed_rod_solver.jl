@@ -7,8 +7,8 @@ using Statistics
 using Dates
 
 # Import the modules being tested (package development mode)
-include("../src/ClampFixedRodSolver.jl")
-using .ClampFixedRodSolver
+include("../src/ClampedPinnedRodSolver.jl")
+using .ClampedPinnedRodSolver
 
 """
     clamp_fixed_rod_solver_no_comparison(config::Union{ClampedRodConfig, Nothing} = nothing)

@@ -3,7 +3,7 @@
 #
 # Solves the inverse position problem using elliptic integrals
 # 
-# Can be run standalone or as part of the ClampFixedRodSolver module
+# Can be run standalone or as part of the ClampedPinnedRodSolver module
 # ---------------------------------------------------------------------------
 # Set this to true to force execution when using VSCode (overridable)
 if !@isdefined(FORCE_STANDALONE_EXECUTION)

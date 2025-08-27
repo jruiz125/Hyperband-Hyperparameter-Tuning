@@ -1,6 +1,6 @@
 # Documentation Auto-Sync System
 
-This directory (`src/utils/docs/`) contains an automated system to keep `src/utils/docs_for_language_server.jl` synchronized with exported functions from your ClampFixedRodSolver package.
+This directory (`src/utils/docs/`) contains an automated system to keep `src/utils/docs_for_language_server.jl` synchronized with exported functions from your ClampedPinnedRodSolver package.
 
 ## 📁 Files
 
@@ -10,7 +10,7 @@ This directory (`src/utils/docs/`) contains an automated system to keep `src/uti
 - **`auto_update_docs.jl`** - One-liner for automatic updates
 - **`update_docs.jl`** - Advanced update script with source extractiontion Auto-Sync System
 
-This directory (`src/utils/docs/`) contains an automated system to keep `docs_for_language_server.jl` synchronized with exported functions from your ClampFixedRodSolver package.
+This directory (`src/utils/docs/`) contains an automated system to keep `docs_for_language_server.jl` synchronized with exported functions from your ClampedPinnedRodSolver package.
 
 ## 📁 Files
 
@@ -32,9 +32,9 @@ sync_documentation(force=true)  # Regenerate all documentation
 
 ### Method 2: Using the Package Function
 ```julia
-using ClampFixedRodSolver
-ClampFixedRodSolver.sync_docs()  # Add missing functions
-ClampFixedRodSolver.sync_docs(force=true)  # Regenerate all
+using ClampedPinnedRodSolver
+ClampedPinnedRodSolver.sync_docs()  # Add missing functions
+ClampedPinnedRodSolver.sync_docs(force=true)  # Regenerate all
 ```
 
 ### Method 3: Command Line
@@ -58,7 +58,7 @@ include("src/utils/docs/auto_update_docs.jl")
 ### Method 5: Manual Integration
 Add to your startup script or module initialization:
 ```julia
-# At the end of src/ClampFixedRodSolver.jl or in your startup
+# At the end of src/ClampedPinnedRodSolver.jl or in your startup
 if isfile("src/utils/docs/sync_docs.jl")
     include("src/utils/docs/sync_docs.jl")
     sync_documentation(verbose=false)
@@ -86,7 +86,7 @@ When you add a new exported function, the system automatically creates:
 """
     your_function_name
 
-[AUTO-GENERATED] Function from the ClampFixedRodSolver package.
+[AUTO-GENERATED] Function from the ClampedPinnedRodSolver package.
 
 Please add detailed documentation here including:
 - Function purpose
@@ -117,7 +117,7 @@ function your_function_name end
 """
     YourStructName
 
-[AUTO-GENERATED] Type/struct definition for the ClampFixedRodSolver package.
+[AUTO-GENERATED] Type/struct definition for the ClampedPinnedRodSolver package.
 
 Please add detailed documentation here including:
 - Purpose and usage
@@ -155,7 +155,7 @@ julia update_docs_simple.jl --test
 
 # From Julia
 include("sync_docs.jl")
-exported = get_exported_symbols("src/ClampFixedRodSolver.jl")
+exported = get_exported_symbols("src/ClampedPinnedRodSolver.jl")
 documented = get_documented_symbols("docs_for_language_server.jl")
 missing = setdiff(exported, documented)
 println("Missing: ", missing)
@@ -194,7 +194,7 @@ include("sync_docs.jl")
 - Run `julia -e 'include("docs_for_language_server.jl")'` for specific error
 
 ### "No exported functions found"  
-- Verify `src/ClampFixedRodSolver.jl` exists and has `export` statements
+- Verify `src/ClampedPinnedRodSolver.jl` exists and has `export` statements
 - Check file paths in sync functions
 
 ### "Auto-generated content not helpful"
@@ -213,7 +213,7 @@ end
 
 2. Export it in main module:
 ```julia
-# In src/ClampFixedRodSolver.jl
+# In src/ClampedPinnedRodSolver.jl
 export amazing_new_solver
 ```
 
