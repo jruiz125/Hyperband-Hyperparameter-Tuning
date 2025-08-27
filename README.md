@@ -21,7 +21,7 @@ This package provides computational tools for:
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/jruiz125/Clamped-Pinned-Rod-Solver.git")
+Pkg.develop(url="https://github.com/jruiz125/Clamped-Pinned-Rod-Solver.git")
 ```
 
 ### For Development
@@ -69,7 +69,7 @@ config = create_config(
 # 3. This file contains all function signatures without MATLAB dependencies
 #
 # Auto-open documentation file (uncomment if VS Code is your editor):
-run(`code "src/utils/docs_for_language_server.jl"`)
+# run(`code "src/utils/docs_for_language_server.jl"`)
 
 println("📖 For function documentation with hover support:")
 println("   Open: src/utils/docs_for_language_server.jl")

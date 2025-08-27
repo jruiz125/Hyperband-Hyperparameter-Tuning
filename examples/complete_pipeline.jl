@@ -1,5 +1,5 @@
 using Pkg
-Pkg.add(url="https://github.com/jruiz125/Clamped-Pinned-Rod-Solver.git")
+Pkg.develop(url="https://github.com/jruiz125/Clamped-Pinned-Rod-Solver.git")
 using ClampedPinnedRodSolver
 
 # Setup project environment
@@ -14,9 +14,9 @@ config = create_config(
     save_figures = true # Enable figure saving
 )
 
-# ===================================================================
+
 # 📖 FUNCTION DOCUMENTATION & HOVER SUPPORT
-# ===================================================================
+
 # Due to MATLAB dependency conflicts, function hover/IntelliSense may not work
 # properly in this file. For full documentation with hover support:
 #
@@ -35,7 +35,7 @@ println("   This file provides full IntelliSense without MATLAB conflicts")
     # 1. Generate initial rod shape (initial_rod_solver)
     # 2. Generate rotation learning data (clamp_fixed_rod_solver) 
     # 3. Split dataset for training/testing (dataset_splitter)
-success = solve_and_prepare_data(config, capture_all_output = true)
+success = solve_and_prepare_data(config)
 
 if success
     println("✅ Pipeline completed successfully!")
