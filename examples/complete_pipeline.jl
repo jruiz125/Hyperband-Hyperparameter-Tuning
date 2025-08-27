@@ -11,8 +11,7 @@ config = create_config(
     yp = 0.0,           # Target y position
     mode = 2,           # Buckling mode
     train_ratio = 0.85, # 85% training, 15% testing
-    save_figures = true, # Enable figure saving
-    capture_all_output = true, # True: Complete REPL capture including all stdout/stderr output
+    save_figures = true # Enable figure saving
 )
 
 # ===================================================================
@@ -36,7 +35,7 @@ println("   This file provides full IntelliSense without MATLAB conflicts")
     # 1. Generate initial rod shape (initial_rod_solver)
     # 2. Generate rotation learning data (clamp_fixed_rod_solver) 
     # 3. Split dataset for training/testing (dataset_splitter)
-success = solve_and_prepare_data(config)
+success = solve_and_prepare_data(config, capture_all_output = true)
 
 if success
     println("✅ Pipeline completed successfully!")
