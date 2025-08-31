@@ -16,13 +16,13 @@ This package implements a **UDE-based approach** to solve the inverse position p
 
 ### Key Features
 
-- ** Neural ODE Networks**: Deep learning approach using 1MLPx3 architecture with `tanh` activation
-- ** UDE Methodology**: Universal Differential Equations for physics-informed machine learning
-- ** Inverse Kinematics**: Solves for rod configurations given end-effector positions
-- ** Training & Prediction**: Complete pipeline from data preparation to model deployment
-- ** Parameter Optimization**: Advanced optimization algorithms for ill-conditioned problems
-- ** Visualization**: Comprehensive plotting and analysis tools
-- ** Configuration Management**: Flexible parameter management system
+- Neural ODE Networks**: Deep learning approach using 1MLPx3 architecture with `tanh` activation
+- UDE Methodology**: Universal Differential Equations for physics-informed machine learning
+- Inverse Kinematics**: Solves for rod configurations given end-effector positions
+- Training & Prediction**: Complete pipeline from data preparation to model deployment
+- Parameter Optimization**: Advanced optimization algorithms for ill-conditioned problems
+- Visualization**: Comprehensive plotting and analysis tools
+- Configuration Management**: Flexible parameter management system
 
 ## Project Structure
 
