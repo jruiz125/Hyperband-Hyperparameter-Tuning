@@ -175,12 +175,7 @@ Each dataset contains:
 
 ## 🧪 Testing
 
-Run the test suite:
-```julia
-julia test/runtests.jl
-```
-
-The testing framework includes:
+The testing framework will includes:
 - Model consistency validation
 - Numerical accuracy checks
 - Configuration verification
@@ -216,7 +211,7 @@ We welcome contributions! Please:
 - **José Luis Ruiz-Erezuma** - *Primary Developer* - [jruiz125@ikasle.ehu.eus](mailto:jruiz125@ikasle.ehu.eus)
 - **Oscar Altuzarra Maestre** - *Research Supervisor*
 
-**Institution**: University of the Basque Country (EHU/UPV)
+**Institution**: University of the Basque Country - EHU
 
 ## 📄 License
 
