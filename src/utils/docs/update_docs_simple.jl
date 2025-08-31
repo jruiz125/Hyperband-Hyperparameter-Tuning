@@ -30,7 +30,7 @@ function main()
                 println("✅ Documentation file loads successfully!")
                 
                 # Show counts
-                exported = get_exported_symbols("src/ClampedPinnedRodSolver.jl")
+                exported = get_exported_symbols("src/ClampedPinnedRodUDE.jl")
                 documented = get_documented_symbols(docs_file)
                 missing = setdiff(exported, documented)
                 
@@ -53,7 +53,7 @@ function main()
     
     force = "--force" in args
     
-    println("🔄 Updating ClampedPinnedRodSolver documentation...")
+    println("🔄 Updating ClampedPinnedRodUDE documentation...")
     
     success = sync_documentation(force=force, verbose=true)
     

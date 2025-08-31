@@ -4,10 +4,6 @@
 # Solves the inverse position problem of a Clamped-pinned Cosserat beam using Neural ODE Networks. UDE methodology is implemented.
 # ---------------------------------------------------------------------------
 
-#using Pkg
-#Pkg.develop(path=joinpath(homedir(), ".julia", "dev", "ClampedPinnedRodSolver"))
-#using ClampedPinnedRodSolver
-
 # Setup project environment and configuration
 include("../utils/project_utils.jl")
 
@@ -15,7 +11,7 @@ include("../utils/project_utils.jl")
 project_root = setup_project_environment(activate_env = true, instantiate = false)
 
 # Create output directories for plots and results
-plots_dir = joinpath(project_root, "src", "Data", "NODE_Oscar_1MLPx3", "Plots_Results")
+plots_dir = joinpath(project_root, "src", "Data")
 mkpath(plots_dir)
 println("Plots & Results will be saved to: ", plots_dir)
 
@@ -26,7 +22,7 @@ println("Running with $(Threads.nthreads()) threads")
 
 # -----------------------------------------------------------------------------
 # 0 .- Load Packages
-#using ClampedPinnedRodUDE
+
     using Lux #, LuxCUDA  # The deep learning (neural network) framework. I do not use GPU now.
     using Optimisers
     using LaTeXStrings
@@ -44,6 +40,9 @@ println("Running with $(Threads.nthreads()) threads")
             using ComponentArrays, Lux, Zygote, StableRNGs
 
         using CpuId
+        using Dates
+
+        timestamp = Dates.format(now(), "yyyy-mm-dd_HHMMSS")
 # ---------------------------------------------------------------------------
 # Print System Information
     println("\n=== System Information ===")
@@ -267,7 +266,7 @@ println("Running with $(Threads.nthreads()) threads")
      X_ssssol = [hcat(x₀[i], y₀[i], θ₀_true[i], κ₀_true[i])' for i in 1:ii]
     
      # Choose rod pose to test comparison
-     c = 15
+     c = 57
 
      # Convert the 4x1 Adjoint matrix to a Vector{Float32}
         new_initial_state = vec(X_ssssol[c])

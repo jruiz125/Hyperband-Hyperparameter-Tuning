@@ -1,24 +1,24 @@
 """
-Documentation-friendly version of ClampedPinnedRodSolver functions for Language Server.
-This file contains the same function signatures and docstrings without MATLAB dependencies.
-Use this file for hover/IntelliSense documentation while developing.
+Documentation-friendly version of ClampedPinnedRodUDE functions for Language Server.
+This file contains the actual function signatures and docstrings from the project
+for proper hover/IntelliSense support while developing.
 
-✅ AUTOMATED SYNC: This file is automatically synchronized with exported functions using 
-the documentation sync system in src/utils/docs/. Run the sync tools to update:
-- From Julia: include("src/utils/docs/sync_docs.jl"); sync_documentation()
-- From CLI: julia src/utils/docs/update_docs_simple.jl
-- From package: ClampedPinnedRodSolver.sync_docs()
+✅ CURRENT STATUS: This file reflects the actual functions available in ClampedPinnedRodUDE
+- Project utilities (project_utils.jl)
+- Configuration management (config.jl) 
+- Logging utilities (logging.jl)
+- Neural ODE training and prediction scripts
 
 To test hover functionality, open this file and hover over function names.
 """
 
-module ClampedPinnedRodSolver
+module ClampedPinnedRodUDE
 
 using Pkg
-using MLUtils, JLD2, Dates, Statistics, StableRNGs
+using JLD2, Dates, Statistics
 
 # ==================================================================================
-# PROJECT UTILITIES
+# PROJECT UTILITIES (from project_utils.jl)
 # ==================================================================================
 
 """
@@ -34,17 +34,23 @@ Auto-detect project root directory by looking for characteristic files.
 
 # Throws
 - `ErrorException`: If project root cannot be found
+
+# Implementation
+Searches upward from start_dir looking for directories containing both:
+- `src/` directory
+- `Project.toml` file
 """
-function find_project_root end
+function find_project_root(; start_dir = @__DIR__)
+    # Implementation in src/utils/project_utils.jl
+end
 
 """
     setup_project_environment(; activate_env = true, instantiate = false)
 
-Sets up the project environment for ClampedPinnedRodSolver.
+Sets up the project environment for ClampedPinnedRodUDE development.
 
-This function automatically detects the project root directory and sets up the Julia 
-environment for the ClampedPinnedRodSolver package. It searches for characteristic project 
-files (like Project.toml and dataset/ directory) to locate the root.
+This function automatically detects the project root directory and configures
+the Julia environment for the UDE neural network training and prediction workflows.
 
 # Keyword Arguments
 - `activate_env::Bool = true`: Whether to activate the Julia environment using Pkg.activate()
@@ -53,233 +59,153 @@ files (like Project.toml and dataset/ directory) to locate the root.
 # Returns
 - `String`: Path to the project root directory
 
-# Throws
-- `ErrorException`: If project root cannot be found
-
 # Examples
 ```julia
 # Basic usage - activate environment in project root
 project_root = setup_project_environment()
 
 # With dependency installation
-project_path = setup_project_environment(activate_env=true, instantiate=true)
+project_root = setup_project_environment(activate_env=true, instantiate=true)
 
 # Just detect project root without activating
-project_path = setup_project_environment(activate_env=false)
+project_root = setup_project_environment(activate_env=false)
 ```
 
-# Details
-The function performs the following steps:
-1. Searches parent directories for Project.toml and dataset/ folder
+# Implementation Details
+1. Calls find_project_root() to locate project directory
 2. Changes working directory to project root
 3. Optionally activates the Julia environment
 4. Optionally installs dependencies via Pkg.instantiate()
-
-This is typically the first function called when using ClampedPinnedRodSolver to ensure
-the proper environment is set up.
 """
 function setup_project_environment(; activate_env = true, instantiate = false)
-    # Implementation in actual ClampedPinnedRodSolver module
+    # Implementation in src/utils/project_utils.jl
+end
+
+# ==================================================================================
+# CONFIGURATION MANAGEMENT (from config.jl)
+# ==================================================================================
+
+"""
+    ClampedRodConfig
+
+Configuration struct for clamped-pinned rod UDE simulations and neural network training.
+
+This struct contains all parameters needed for:
+- Neural ODE network training
+- Rod geometry and boundary conditions
+- Dataset generation and splitting
+- Figure saving and visualization
+
+# Fields
+
+## Rod Geometry
+- `L::Float64`: Length of the rod [m]
+- `N::Int`: Number of nodes for rod discretization
+- `EI::Float64`: Stiffness of the angular component of deformation
+
+## Boundary Conditions
+- `x0::Float64`: X Coordinate of Clamped-end [m]
+- `y0::Float64`: Y Coordinate of Clamped-end [m]
+- `theta::Float64`: Orientation of Clamped-end with X axis [rad]
+- `xp::Float64`: X coordinate of pinned end [m]
+- `yp::Float64`: Y coordinate of pinned end [m]
+
+## Linear Guide Parameters
+- `alpha::Float64`: Angle of the linear guide [rad]
+- `lambda::Float64`: Length of the linear guide [m]
+
+## Solution Parameters
+- `mode::Float64`: Buckling Mode for elliptic integrals approach
+- `sol_number::Int`: Solution number from initial rod data
+
+## Rotation Parameters (for dataset generation)
+- `rotation_angle::Float64`: Total rotation angle [degrees]
+- `angular_steps::Int`: Number of angular steps for data generation
+- `save_at_step::Int`: Step number to save data
+
+## Grid Discretization
+- `slope::Float64`: Controls kr density distribution, 0-1
+- `Nkr::Int`: Number of points for kr axis discretization
+- `Npsi::Int`: Number of points for psi axis discretization
+- `epsilon::Float64`: Numerical tolerance to avoid singularities
+
+## Training Parameters
+- `train_ratio::Float64`: Ratio of dataset used for training, 0-1
+
+## Figure Saving
+- `save_figures::Bool`: Enable/disable figure saving
+- `use_timestamped_folders::Bool`: Create timestamped folders for figures
+- `figures_base_path::String`: Base path for saving figures
+- `figure_format::String`: Figure file format ("png", "pdf", "svg", "eps")
+- `figure_dpi::Int`: Figure resolution in DPI
+
+# Examples
+```julia
+# Create with default values
+config = get_default_config()
+
+# Create with custom parameters
+config = create_config(xp=0.5, yp=0.2, L=2.0, N=100)
+```
+"""
+struct ClampedRodConfig
+    # Implementation in src/utils/config.jl
 end
 
 """
-    find_project_root(; start_dir = @__DIR__)
+    get_default_config()
 
-Auto-detect project root directory by looking for characteristic files.
-
-# Arguments
-- `start_dir::String = @__DIR__`: Starting directory for search
+Get the default configuration for ClampedPinnedRodUDE simulations.
 
 # Returns
-- `String`: Path to the project root directory
+- `ClampedRodConfig`: Configuration object with standard parameter values
 
-# Throws
-- `ErrorException`: If project root cannot be found
+# Default Values
+- Rod length: 1.0 m
+- Discretization: 50 nodes
+- Target position: (0.3, 0.0) m
+- Training ratio: 70%
+- Angular steps: 72 (5° each)
+- Figure saving: enabled
+
+# Examples
+```julia
+config = get_default_config()
+print_config(config)
+```
 """
-function find_project_root(; start_dir = @__DIR__)
-    # Implementation in ClampedPinnedRodSolver module
+function get_default_config()
+    # Implementation in src/utils/config.jl
 end
 
 """
     create_config(; kwargs...)
 
-Create a configuration object for the clamped rod solver with comprehensive parameter control.
+Create a configuration object with custom parameters.
 
 # Keyword Arguments
-
-## Rod Geometry
-- `L::Float64 = 1.0`: Length of the rod [m]
-- `N::Int = 50`: Number of nodes in which the rod is discretized
-- `EI::Float64 = 1.0`: Stiffness of the angular component of deformation
-
-## Clamped End Conditions
-- `x0::Float64 = 0.0`: X Coordinate of Clamped-end [m]
-- `y0::Float64 = 0.0`: Y Coordinate of Clamped-end [m]
-- `theta::Float64 = 0.0`: Orientation of Clamped-end with X axis [rad]
-
-## Linear Guide Parameters
-- `alpha::Float64 = 0.0`: Angle of the linear guide [rad] (0 when not present)
-- `lambda::Float64 = 0.0`: Length of the linear guide [m] (0 when not present)
-
-## Pinned End Conditions
-- `xp::Float64 = 0.1`: X coordinate of end-tip [m]
-- `yp::Float64 = 0.0`: Y coordinate of end-tip [m]
-
-## Solution Parameters
-- `mode::Float64 = 2.0`: Buckling Mode in Elliptic Integrals approach
-- `sol_number::Int = 1`: Solution number from initial rod data
-
-## Rotation Parameters (for clamp rotation data generation)
-- `rotation_angle::Float64 = 360.0`: Total rotation angle [degrees]
-- `angular_steps::Int = 72`: Number of angular steps (Δθ = 360°/72 = 5° per step)
-- `save_at_step::Int = angular_steps`: Step number to save data before potential termination
-
-## Grid Discretization Parameters (for elliptical solver)
-- `slope::Float64 = 0.1`: Controls kr density distribution, 0-1
-- `Nkr::Int = 150`: Number of points for kr axis discretization
-- `Npsi::Int = 300`: Number of points for psi axis discretization
-- `epsilon::Float64 = 1e-9`: Numerical tolerance to avoid singularities
-
-## Training Parameters (for dataset splitting)
-- `train_ratio::Float64 = 0.7`: Ratio of dataset used for training, 0-1
-
-## Figure Saving Parameters
-- `save_figures::Bool = true`: Enable/disable figure saving
-- `use_timestamped_folders::Bool = true`: Create timestamped folders for figures
-- `figures_base_path::String = "figures"`: Base path for saving figures
-- `figure_format::String = "png"`: Figure file format: "png", "pdf", "svg", "eps"
-- `figure_dpi::Int = 300`: Figure resolution in DPI
+All parameters from ClampedRodConfig struct can be specified as keyword arguments.
+Unspecified parameters use default values.
 
 # Returns
-- `ClampedRodConfig`: Configuration object with all specified parameters
+- `ClampedRodConfig`: Configuration object with specified parameters
 
 # Examples
 ```julia
-# Basic configuration with target position
-config = create_config(xp=0.3, yp=0.0, mode=2)
+# Custom rod geometry and target
+config = create_config(L=2.0, N=100, xp=0.5, yp=0.2)
 
-# Advanced configuration with custom geometry
+# High-resolution training setup
 config = create_config(
-    xp=0.5, yp=0.2, mode=1,
-    L=2.0, N=100, EI=0.5
-)
-
-# Machine learning dataset configuration
-config = create_config(
-    xp=0.3, yp=0.1, mode=2,
-    train_ratio=0.85,  # 85% training, 15% testing
-    angular_steps=72,  # 72 rotation steps (5° each)
-    save_figures=true
-)
-
-# High-resolution solver configuration
-config = create_config(
-    xp=0.4, yp=0.0, mode=2,
-    Nkr=300, Npsi=600,  # High grid resolution
-    epsilon=1e-12,      # High precision
-    figure_dpi=600      # High-quality figures
-)
-
-# Custom figure saving
-config = create_config(
-    xp=0.2, yp=0.0,
-    save_figures=true,
-    figure_format="pdf",
-    figures_base_path="results/my_simulation"
+    angular_steps=360,    # 1° resolution
+    train_ratio=0.85,     # 85% training data
+    figure_dpi=600        # High-quality figures
 )
 ```
-
-# Notes
-- All parameters have sensible defaults for most applications
-- Rod geometry parameters (L, N, EI) control physical properties and discretization
-- Rotation parameters control the dataset generation for machine learning
-- Grid discretization affects solver accuracy vs computational time
-- Figure saving parameters provide flexible output control
-
-# See Also
-- [`ClampedRodConfig`](@ref): Configuration struct definition
-- [`get_default_config`](@ref): Get default configuration
-- [`print_config`](@ref): Display configuration values
 """
-function create_config end
-
-"""
-    ClampedRodConfig
-
-Configuration struct for the clamped rod solver containing all solver parameters,
-figure settings, and output options.
-
-# Fields
-- `X_TARGET_INITIAL::Float64`: Initial X-coordinate target position (default: 2.0)
-- `Y_TARGET_INITIAL::Float64`: Initial Y-coordinate target position (default: 0.0)
-- `SOLVER_MODE::Int`: Solver mode selection (1 or 2, default: 2)
-- `FIGURE_SAVE_FORMAT::String`: Format for saved figures ("png", "pdf", "svg", default: "png")
-- `SAVE_FIGURES::Bool`: Whether to save generated figures (default: false)
-- `FIGURE_DPI::Int`: Resolution for saved figures (default: 300)
-- `OUTPUT_DIRECTORY::String`: Directory for output files (default: "figures")
-
-# Constructor
-```julia
-config = ClampedRodConfig()  # Default values
-config = ClampedRodConfig(X_TARGET_INITIAL=3.0, Y_TARGET_INITIAL=1.5)  # Custom values
-```
-
-# Examples
-```julia
-# Create configuration with defaults
-config = ClampedRodConfig()
-
-# Access and modify parameters
-config.X_TARGET_INITIAL = 2.5
-config.SAVE_FIGURES = true
-config.FIGURE_SAVE_FORMAT = "pdf"
-```
-
-# Notes
-- All fields are mutable and can be modified after creation
-- Configuration validates parameter ranges where applicable
-- Used by all solver functions to control behavior and output
-
-# See Also
-- [`create_config`](@ref): Function-based configuration creation
-- [`get_default_config`](@ref): Get default configuration
-- [`print_config`](@ref): Display configuration values
-"""
-mutable struct ClampedRodConfig end
-
-"""
-    get_default_config()
-
-Get the default configuration for the clamped rod solver.
-
-# Returns
-- `ClampedRodConfig`: Default configuration object with standard parameter values.
-
-# Examples
-```julia
-# Get default configuration
-config = get_default_config()
-
-# Use with solver
-results = initial_rod_solver(config)
-
-# Modify default configuration
-config = get_default_config()
-config.X_TARGET_INITIAL = 2.5
-config.SAVE_FIGURES = true
-```
-
-# Notes
-- Provides a convenient way to get standard configuration
-- Equivalent to calling `ClampedRodConfig()` with default parameters
-- Recommended starting point for most solver applications
-
-# See Also
-- [`ClampedRodConfig`](@ref): Configuration struct definition
-- [`create_config`](@ref): Alternative configuration creation method
-- [`print_config`](@ref): Display configuration values
-"""
-function get_default_config end
+function create_config(; kwargs...)
+    # Implementation in src/utils/config.jl
+end
 
 """
     print_config(config::ClampedRodConfig)
@@ -289,13 +215,22 @@ Display configuration parameters in a formatted, readable way.
 # Arguments
 - `config::ClampedRodConfig`: Configuration object to display
 
-# Example
+# Output
+Prints formatted configuration showing:
+- Rod geometry parameters
+- Boundary conditions
+- Training parameters
+- Output settings
+
+# Examples
 ```julia
 config = get_default_config()
 print_config(config)
 ```
 """
-function print_config end
+function print_config(config::ClampedRodConfig)
+    # Implementation in src/utils/config.jl
+end
 
 """
     should_save_figures(config::ClampedRodConfig)
@@ -306,9 +241,11 @@ Check if figure saving is enabled in the configuration.
 - `config::ClampedRodConfig`: Configuration object
 
 # Returns
-- `Bool`: `true` if figures should be saved, `false` otherwise
+- `Bool`: true if figures should be saved, false otherwise
 """
-function should_save_figures end
+function should_save_figures(config::ClampedRodConfig)
+    # Implementation in src/utils/config.jl
+end
 
 """
     get_figure_path(config::ClampedRodConfig, filename::String; create_dirs::Bool = true)
@@ -325,7 +262,9 @@ Generate appropriate file path for saving figures based on configuration.
 # Returns
 - `String`: Full path for saving the figure
 """
-function get_figure_path end
+function get_figure_path(config::ClampedRodConfig, filename::String; create_dirs::Bool = true)
+    # Implementation in src/utils/config.jl
+end
 
 """
     get_figure_save_options(config::ClampedRodConfig)
@@ -336,121 +275,147 @@ Get figure saving options from configuration.
 - `config::ClampedRodConfig`: Configuration object
 
 # Returns
-- Options for figure saving (format depends on implementation)
+- Named tuple with figure saving options (format, dpi, etc.)
 """
-function get_figure_save_options end
-    # Implementation in ClampedPinnedRodSolver module
+function get_figure_save_options(config::ClampedRodConfig)
+    # Implementation in src/utils/config.jl
+end
+
+# ==================================================================================
+# NEURAL ODE TRAINING & PREDICTION SCRIPTS
+# ==================================================================================
+
+"""
+    Neural ODE Training Script
+
+Located at: `src/solvers/Clamped_Pinned_Rotate_1MLPx3_Training.jl`
+
+This script implements the UDE (Universal Differential Equations) training pipeline:
+
+## Features
+- **Neural Network**: 1MLPx3 architecture with tanh activation
+- **Training Data**: MATLAB .mat files from dataset/ directory  
+- **Optimization**: Multiple algorithms (ADAM, L-BFGS, etc.)
+- **Output**: Trained models saved as .jld2 files in src/Data/
+
+## Usage
+```julia
+# Run the training script
+include("src/solvers/Clamped_Pinned_Rotate_1MLPx3_Training.jl")
+```
+
+## Dependencies
+- Lux.jl (neural networks)
+- OrdinaryDiffEq.jl (ODE solving)
+- Optimization.jl (training algorithms)
+- MATLAB.jl (data loading)
+- JLD2.jl (model saving)
+
+## Output Files
+- Trained neural network parameters
+- Training loss history
+- Performance benchmarks
+- Visualization plots
+"""
+
+"""
+    Neural ODE Prediction Script
+
+Located at: `src/solvers/Clamped_Pinned_Rotate_1MLPx3_Predict.jl`
+
+This script loads trained UDE models and generates predictions:
+
+## Features
+- **Model Loading**: Reads trained .jld2 models from src/Data/
+- **Prediction**: Generates rod configurations for test data
+- **Visualization**: Creates comprehensive plots and analysis
+- **Output**: Timestamped results with plots and data
+
+## Usage
+```julia
+# Run the prediction script
+include("src/solvers/Clamped_Pinned_Rotate_1MLPx3_Predict.jl")
+```
+
+## Dependencies
+- Lux.jl (neural network inference)
+- CairoMakie.jl (high-quality plotting)
+- JLD2.jl (model loading)
+- MATLAB.jl (test data loading)
+
+## Output
+- Prediction accuracy analysis
+- Comparative visualizations
+- Error analysis plots
+- Timestamped result folders
+"""
+
+# ==================================================================================
+# LOGGING UTILITIES (from logging.jl)
+# ==================================================================================
+
+"""
+    setup_logging(config; log_dir="logs", capture_all_output=false)
+
+Set up comprehensive logging for UDE training and prediction workflows.
+
+# Arguments
+- `config`: Configuration object
+
+# Keyword Arguments  
+- `log_dir::String = "logs"`: Directory for log files
+- `capture_all_output::Bool = false`: Whether to capture all console output
+
+# Returns
+- LogCapture object for managing logging throughout execution
+
+# Features
+- Timestamped log files
+- Configuration recording
+- Console output capture
+- Training progress logging
+"""
+function setup_logging(config; log_dir="logs", capture_all_output=false)
+    # Implementation in src/utils/logging.jl
 end
 
 """
-    initial_rod_solver(config=nothing; mode=2, xp=0.3, yp=0.0)
+    log_section(log_capture, title::String; width=60)
 
-Solve the inverse kinematics problem for a flexible rod using elliptical integrals.
+Create a formatted section header in the log.
 
 # Arguments
-- `config`: Configuration object (optional, uses defaults if not provided)
+- `log_capture`: LogCapture object
+- `title::String`: Section title
 
 # Keyword Arguments
-- `mode::Int = 2`: Solver mode
-- `xp::Float64 = 0.3`: X position of pinned end
-- `yp::Float64 = 0.0`: Y position of pinned end
-
-# Returns
-- `Dict`: Results containing rod shape, forces, and analysis data
-
-# Examples
-```julia
-# Basic usage
-results = initial_rod_solver()
-
-# With custom parameters
-results = initial_rod_solver(mode=1, xp=0.5, yp=0.2)
-
-# With configuration object
-config = create_config(xp=0.3, yp=0.0)
-results = initial_rod_solver(config)
-```
+- `width::Int = 60`: Width of the section header
 """
-function initial_rod_solver(config=nothing; mode=2, xp=0.3, yp=0.0)
-    # Implementation in ClampedPinnedRodSolver module - interfaces with MATLAB
+function log_section(log_capture, title::String; width=60)
+    # Implementation in src/utils/logging.jl
 end
 
+# ==================================================================================
+# DOCUMENTATION SYNCHRONIZATION
+# ==================================================================================
+
 """
-    clamp_fixed_rod_solver(config::Union{ClampedRodConfig, Nothing} = nothing)
+    sync_docs(; force::Bool=false)
 
-Generates learning data for clamped-pinned rod configurations by rotating the clamp through 360°.
-
-This function interfaces with MATLAB to generate a dataset of rod configurations by rotating 
-the clamped end through a complete 360° rotation while maintaining the pinned end at a fixed 
-position. The solver uses an existing rod solution as initial configuration and incrementally 
-rotates the clamp, solving inverse kinematics at each step to generate training data for 
-machine learning applications.
+Synchronize the documentation file with exported functions.
 
 # Arguments
-- `config::Union{ClampedRodConfig, Nothing} = nothing`: Rod configuration parameters. 
-  If `nothing`, uses default configuration from `get_default_config()`.
+- `force::Bool=false`: If true, regenerates all documentation
 
-# Returns
-- `Bool`: `true` if data generation completed successfully, `false` if errors occurred
-
-# Algorithm Steps
-1. **Load Initial Configuration**: Uses parametric rod data file as starting point
-2. **Setup Rotation Parameters**: Defines 360° rotation divided into configurable steps
-3. **Incremental Solving**: For each rotation angle, solve inverse kinematics
-4. **Visualization**: Generate real-time plots showing rod motion and analysis
-5. **Data Export**: Save complete dataset as learning data for ML training
-
-# Examples
+# Usage
 ```julia
-# Using default configuration
-success = clamp_fixed_rod_solver()
-
-# Using custom configuration
-config = create_config(xp = 0.5, yp = 0.0, mode = 2.0)
-success = clamp_fixed_rod_solver(config)
-
-# For different rod geometries
-config = create_config(L = 2.0, EI = 0.5, N = 100)
-success = clamp_fixed_rod_solver(config)
-
-# High resolution rotation
-config = create_config(angular_steps = 360, save_at_step = 350)
-success = clamp_fixed_rod_solver(config)
-```
-
-# Application
-Primarily used for generating training datasets for:
-- **Neural Networks**: Learning inverse kinematics mappings
-- **Machine Learning**: Pattern recognition in flexible rod behavior
-- **Control Systems**: Developing model-based controllers
-- **Robotics**: Soft/continuum robot control algorithms
-"""
-function clamp_fixed_rod_solver end
-
-"""
-    solve_and_prepare_data(config::Union{ClampedRodConfig, Nothing} = nothing)
-
-Comprehensive solver and data preparation pipeline for rod mechanics.
-
-This function provides a complete solution workflow including rod solving, data preparation,
-and optional visualization. It serves as a high-level interface that coordinates multiple
-solver functions and data processing steps.
-
-# Arguments
-- `config::Union{ClampedRodConfig, Nothing} = nothing`: Rod configuration parameters.
-  If `nothing`, uses default configuration.
-
-# Returns
-- `Bool`: `true` if pipeline completed successfully, `false` if errors occurred
-
-# Examples
-```julia
-# Basic usage with default configuration
-success = solve_and_prepare_data()
-
-# With custom configuration
-config = create_config(xp=0.3, yp=0.1, mode=2)
-success = solve_and_prepare_data(config)
+using ClampedPinnedRodUDE
+ClampedPinnedRodUDE.sync_docs()  # Add missing function docs
+ClampedPinnedRodUDE.sync_docs(force=true)  # Regenerate all docs
 ```
 """
-function solve_and_prepare_data end
+function sync_docs(; force::Bool=false)
+    # Implementation in src/ClampedPinnedRodUDE.jl
+end
+
+end # module ClampedPinnedRodUDE

@@ -1,5 +1,5 @@
 """
-Documentation Auto-Sync Utilities for ClampedPinnedRodSolver
+Documentation Auto-Sync Utilities for ClampedPinnedRodUDE
 
 Simple functions to keep docs_for_language_server.jl synchronized with
 exported functions from the main module.
@@ -37,7 +37,7 @@ sync_documentation(verbose=false)
 """
 function sync_documentation(; force::Bool=false, verbose::Bool=true)
     # File paths
-    main_file = joinpath(@__DIR__, "..", "..", "ClampedPinnedRodSolver.jl")
+    main_file = joinpath(@__DIR__, "..", "..", "ClampedPinnedRodUDE.jl")
     docs_file = joinpath(@__DIR__, "..", "docs_for_language_server.jl")
     
     if !isfile(main_file)
@@ -160,7 +160,7 @@ function generate_template_doc(symbol_name::Symbol)
 \"\"\"
     $symbol_name
 
-[AUTO-GENERATED] Type/struct definition for the ClampedPinnedRodSolver package.
+[AUTO-GENERATED] Type/struct definition for the ClampedPinnedRodUDE package.
 
 Please add detailed documentation here including:
 - Purpose and usage
@@ -184,7 +184,7 @@ $(occursin("Config", symbol_str) ? "mutable " : "")struct $symbol_name end
 \"\"\"
     $symbol_name
 
-[AUTO-GENERATED] Function from the ClampedPinnedRodSolver package.
+[AUTO-GENERATED] Function from the ClampedPinnedRodUDE package.
 
 Please add detailed documentation here including:
 - Function purpose
@@ -218,7 +218,7 @@ Create a new documentation file.
 function create_documentation_file(docs_file::String, symbols::Vector{Symbol}, verbose::Bool)
     header = """
 \"\"\"
-Documentation stubs for ClampedPinnedRodSolver Language Server support.
+Documentation stubs for ClampedPinnedRodUDE Language Server support.
 
 This file provides function and type definitions that the Julia Language Server
 can understand for hover documentation and IntelliSense features.

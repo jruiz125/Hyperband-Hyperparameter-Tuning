@@ -22,7 +22,7 @@ function find_project_root(; start_dir = @__DIR__)
     current = start_dir
     while current != dirname(current)
         # Look for characteristic project files
-        if isdir(joinpath(current, "dataset")) && 
+        if isdir(joinpath(current, "src")) && 
            isfile(joinpath(current, "Project.toml"))
             return current
         end
