@@ -10,21 +10,21 @@
 
 A comprehensive Julia package for solving the inverse kinematics of clamped-pinned rods using **Universal Differential Equations (UDE)** and **Neural ODE** networks. This package extends traditional rod solving approaches with machine learning methodologies for enhanced accuracy and efficiency.
 
-## 🎯 Overview
+## Overview
 
 This package implements a **UDE-based approach** to solve the inverse position problem of Clamped-Pinned Cosserat beams. The system uses Neural ODE networks to learn the complex kinematics of flexible rods under various boundary conditions and rotational constraints.
 
 ### Key Features
 
-- **🧠 Neural ODE Networks**: Deep learning approach using 1MLPx3 architecture with `tanh` activation
-- **📊 UDE Methodology**: Universal Differential Equations for physics-informed machine learning
-- **🔄 Inverse Kinematics**: Solves for rod configurations given end-effector positions
-- **📈 Training & Prediction**: Complete pipeline from data preparation to model deployment
-- **🎛️ Parameter Optimization**: Advanced optimization algorithms for ill-conditioned problems
-- **📱 Visualization**: Comprehensive plotting and analysis tools
-- **⚙️ Configuration Management**: Flexible parameter management system
+- ** Neural ODE Networks**: Deep learning approach using 1MLPx3 architecture with `tanh` activation
+- ** UDE Methodology**: Universal Differential Equations for physics-informed machine learning
+- ** Inverse Kinematics**: Solves for rod configurations given end-effector positions
+- ** Training & Prediction**: Complete pipeline from data preparation to model deployment
+- ** Parameter Optimization**: Advanced optimization algorithms for ill-conditioned problems
+- ** Visualization**: Comprehensive plotting and analysis tools
+- ** Configuration Management**: Flexible parameter management system
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 ClampedPinnedRodUDE/
@@ -50,7 +50,7 @@ ClampedPinnedRodUDE/
 └── Manifest.toml                       # Dependency versions
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -117,7 +117,7 @@ config = ClampedRodConfig(
 print_config(config)
 ```
 
-## 🧮 Mathematical Foundation
+## Mathematical Foundation
 
 The package solves the **inverse kinematics problem** for Cosserat rods using:
 
@@ -138,7 +138,7 @@ The package solves the **inverse kinematics problem** for Cosserat rods using:
 - **Regularization**: Advanced techniques for ill-conditioned problems
 - **Data**: Multiple rotation scenarios (X02, X05, X08 positions)
 
-## 📊 Dataset Information
+## Dataset Information
 
 The package includes comprehensive datasets with:
 
@@ -154,7 +154,7 @@ Each dataset contains:
 - `κ₀(θ₀)`: Curvature along the rod
 - `θ₀`: Rotation angle parameter
 
-## 🔧 Dependencies
+## Dependencies
 
 ### Core Packages
 - **Lux.jl**: Neural networks and deep learning
@@ -173,7 +173,7 @@ Each dataset contains:
 - **StableRNGs.jl**: Reproducible random numbers
 - **LaTeXStrings.jl**: Mathematical notation
 
-## 🧪 Testing
+## Testing
 
 The testing framework will includes:
 - Model consistency validation
@@ -181,7 +181,7 @@ The testing framework will includes:
 - Configuration verification
 - Performance benchmarks
 
-## 📈 Performance & Optimization
+## Performance & Optimization
 
 ### Optimization Strategies
 - **Regularization**: Tikhonov, Truncated SVD, LSQR/LSMR
@@ -196,7 +196,7 @@ The package includes comprehensive benchmarking tools to measure:
 - Memory usage
 - Convergence rates
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please:
 
@@ -206,18 +206,18 @@ We welcome contributions! Please:
 4. Add tests for new functionality
 5. Submit a pull request
 
-## 👥 Authors
+## Authors
 
 - **José Luis Ruiz-Erezuma** - *Primary Developer* - [jruiz125@ikasle.ehu.eus](mailto:jruiz125@ikasle.ehu.eus)
 - **Oscar Altuzarra Maestre** - *Research Supervisor*
 
 **Institution**: University of the Basque Country - EHU
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📚 Citation
+## Citation
 
 If you use this package in your research, please cite:
 
@@ -231,13 +231,13 @@ If you use this package in your research, please cite:
 }
 ```
 
-## 🔗 Related Projects
+## Related Projects
 
 - **ClampedPinnedRodSolver**: Traditional analytical solver approach
 - **SciML.jl**: Scientific Machine Learning ecosystem
 - **DifferentialEquations.jl**: Differential equation solving framework
 
-## 📞 Support
+## Support
 
 For questions, issues, or suggestions:
 - **Email**: [jruiz125@ikasle.ehu.eus](mailto:jruiz125@ikasle.ehu.eus)
