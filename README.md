@@ -231,6 +231,16 @@ If you use this package in your research, please cite:
 }
 ```
 
+## Documentation
+
+### Hyperparameter Optimization
+- [Hyperparameter Optimization Guide](docs/hyperparameter-optimization.md) - Comprehensive guide to multi-stage optimization strategies
+- [Hyperband Algorithm Reference](https://2020blogfor.github.io/posts/2020/04/hyperband/) - External resource on Hyperband theory and implementation
+
+### Implementation Files
+- [`Optimization_copilot_Bayessian_LSQR.jl`](src/solvers/development/Optimization_copilot_Bayessian_LSQR.jl) - Main hyperparameter optimization implementation
+- [`copilotmd/`](copilotmd/) - Additional optimization documentation and guides
+
 ## Related Projects
 
 - **ClampedPinnedRodSolver**: Traditional analytical solver approach

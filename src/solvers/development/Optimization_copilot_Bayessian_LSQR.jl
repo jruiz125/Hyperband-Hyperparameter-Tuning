@@ -7,55 +7,109 @@
 # 3. DE/PSO → RAdam → LSQR
 # ---------------------------------------------------------------------------
 
+
 # Setup project environment
-include("../utils/project_utils.jl")
+include("../../utils/project_utils.jl")
 project_root = setup_project_environment(activate_env = true, instantiate = false)
 
+timestamp = Dates.format(now(), "yyyy-mm-dd_HHMMSS")
 # Create output directories
-plots_dir = joinpath(project_root, "src", "Data", "NODE_HyperOpt_LSQR", "Plots_Results")
+plots_dir = joinpath(project_root, "src", "Data", "Hyper_optim", timestamp)
 mkpath(plots_dir)
-println("Results will be saved to: ", plots_dir)
+println("Plots & Results will be saved to: ", plots_dir)
 
 # -----------------------------------------------------------------------------
-# Load Packages
-using Lux
-using Optimisers
-using LaTeXStrings
-using Plots
-using BenchmarkTools
-gr()
+# Load Packages (Organized by Dependencies)
 
-# SciML Tools
-using OrdinaryDiffEq, SciMLSensitivity
-using Optimization, OptimizationOptimisers, OptimizationOptimJL
-
-# For LSQR
-using IterativeSolvers
+# 1. Standard Library (Base Julia)
+using Dates
+using Statistics, Random
 using LinearAlgebra
 using SparseArrays
-using FiniteDiff  # For Jacobian computation
 
-# Global optimization
+# 2. Core Mathematical/Scientific Computing
+using ComponentArrays
+using StableRNGs
+
+# 3. Automatic Differentiation & Neural Networks
+using Zygote
+using Lux
+
+# 4. SciML Ecosystem (Order Matters)
+using OrdinaryDiffEq
+using SciMLSensitivity
+using Optimization
+using OptimizationOptimisers
+using OptimizationOptimJL
+using Optimisers
+
+# 5. Iterative Methods & Numerical Analysis
+using IterativeSolvers
+using FiniteDiff
+
+# 6. Global Optimization
 using Evolutionary
 using BlackBoxOptim
 
-# Hyperparameter optimization
+# 7. Hyperparameter Optimization
 using Hyperopt
 using BayesianOptimization
 using GaussianProcesses
+using Distributions  # For Normal(), cdf(), pdf()
+using Optim          # For Fminbox(LBFGS())
 
-# Utilities
-using Statistics, Random
-using ComponentArrays, Lux, Zygote, StableRNGs
-using DataFrames, CSV
+# 8. Data Handling & I/O
+using DataFrames
+using CSV
 using JSON3
+using MATLAB
+
+# 9. Visualization & Benchmarking
+using Plots
+using LaTeXStrings
+using BenchmarkTools
 using ProgressMeter
+
+# Set plot backend
+gr()
+
+#=
+    # Install the most essential packages first
+    essential_packages = [
+        "IterativeSolvers", "FiniteDiff", "Evolutionary", 
+        "Distributions", "Optim", "DataFrames", "CSV", 
+        "JSON3", "ProgressMeter"
+    ]
+
+    for pkg in essential_packages
+        try
+            Pkg.add(pkg)
+            println("✅ Successfully installed $pkg")
+        catch e
+            println("❌ Failed to install $pkg: $e")
+        end
+    end
+
+    # Then try the potentially problematic ones
+    problematic_packages = [
+        "BlackBoxOptim", "Hyperopt", "BayesianOptimization", "GaussianProcesses"
+    ]
+
+    for pkg in problematic_packages
+        try
+            Pkg.add(pkg)
+            println("✅ Successfully installed $pkg")
+        catch e
+            println("❌ Failed to install $pkg: $e")
+        end
+    end
+
+=#
 
 # -----------------------------------------------------------------------------
 # Load your UDE setup (using code from your file)
 println("Loading dataset and setting up UDE...")
 
-using MATLAB
 filename_DataSet = joinpath(project_root, "dataset", "LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_mode2_train_085.mat")
 println("Loading dataset from: ", filename_DataSet)
 
@@ -706,9 +760,6 @@ hyperband_results["Strategy3"] = (config=best_config3, loss=best_loss3)
 println("\n" * "="^60)
 println("BAYESIAN OPTIMIZATION WITH LSQR")
 println("="^60)
-
-using GaussianProcesses
-using Optim
 
 function bayesian_optimization_strategy(strategy_fn, bounds_dict, strategy_name;
                                        n_initial=5, n_iterations=20)
