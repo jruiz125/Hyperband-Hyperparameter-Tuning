@@ -48,29 +48,16 @@ include("utils/project_utils.jl")
 include("utils/config.jl")
 
 # Include solver modules
-# include("solvers/initial_rod_solver.jl")  # File doesn't exist yet
-# include("solvers/clamp_fixed_rod_solver.jl")  # File doesn't exist yet
 
-# Include MATLAB-dependent script functions
-# include("scripts/solve_and_prepare_data.jl")  # File doesn't exist yet
 
 # Export project utilities
-export find_project_root, 
-       setup_project_environment
+
 
 # Export configuration functions and types
-export ClampedRodConfig,
-       get_default_config,
-       create_config,
-       print_config,
-       should_save_figures,
-       get_figure_path,
-       get_figure_save_options
+
 
 # Export main solver functions
-export initial_rod_solver,
-       clamp_fixed_rod_solver,
-       solve_and_prepare_data
+
 
 # Documentation synchronization function
 """
