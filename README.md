@@ -33,6 +33,64 @@ This repository demonstrates the Hyperband method through a comprehensive analys
 - **Analysis file**: `src/solvers/hyperband_Lotka-Volterra.jl` - Contains the complete comparison between Hyperband and Random Search methods
 - **Optimal model**: `src/solvers/hyperband_Lotka-Volterra_optimal9.jl` - Contains the best configuration found during hyperparameter tuning and final model training
 
+### Configuration Space
+
+The Lotka-Volterra example optimizes over a **5-dimensional hyperparameter space**:
+
+| Parameter | Type | Range/Options | Description |
+|-----------|------|---------------|-------------|
+| `hidden_dim` | Discrete | [16, 32, 64, 128] | Neural network hidden layer dimensions |
+| `n_layers` | Integer | 2-5 | Number of hidden layers in the network |
+| `activation` | Categorical | [tanh, relu, sigmoid] | Activation function for hidden layers |
+| `learning_rate` | Continuous | 10^(-4) to 10^(-1) | Learning rate for optimization (log-uniform) |
+| `solver` | Categorical | [Tsit5(), Vern7(), AutoTsit5(Rosenbrock23())] | ODE solver method |
+
+This configuration space represents **3,840 possible discrete combinations** (4 × 4 × 3 × [continuous] × 3), with the learning rate sampled continuously from the log-uniform distribution, resulting in an effectively infinite search space that demonstrates the power of Hyperband's adaptive resource allocation.
+
+### Best Configuration Found
+
+Hyperband optimization identified the following **optimal configuration**:
+
+| Hyperparameter | Optimal Value | Description |
+|----------------|---------------|-------------|
+| `hidden_dim` | 32 | Hidden layer dimensions |
+| `n_layers` | 5 | Number of hidden layers (6 total layers) |
+| `activation` | tanh | Activation function |
+| `learning_rate` | 0.00390 | Learning rate for ADAM optimizer |
+| `solver` | Vern7() | 7th-order Verner ODE solver |
+
+**Network Architecture**: 2 → 32 → 32 → 32 → 32 → 32 → 2 (197,282 parameters)
+
+### Two-Stage Training Approach
+
+The optimal configuration was trained using a **robust two-stage optimization strategy**:
+
+#### Stage 1: ADAM Optimization
+- **Optimizer**: ADAM with adaptive learning rates
+- **Learning Rate**: 0.00390 (found by Hyperband)
+- **Maximum Iterations**: 1,000 (Hyperband), 5,000 (Baseline)
+- **Purpose**: Fast initial convergence and exploration
+- **Automatic Differentiation**: Zygote.jl via QuadratureAdjoint
+- **Sensealg**: ReverseDiffVJP for efficient gradient computation
+
+#### Stage 2: L-BFGS Refinement
+- **Optimizer**: L-BFGS with BackTracking line search
+- **Line Search**: LineSearches.BackTracking() for robust step sizing
+- **Maximum Iterations**: Up to 1,000
+- **Purpose**: Fine-tuning and high-precision convergence
+- **Initialization**: Uses ADAM result as starting point
+- **Convergence**: Typically converges in fewer iterations due to better starting point
+
+### Training Configuration Summary
+
+| Method | Architecture | Activation | Learning Rate | ADAM Iters | L-BFGS Iters | Total Params |
+|--------|-------------|------------|---------------|------------|---------------|--------------|
+| **Hyperband (Best)** | 2→32→32→32→32→32→2 | tanh | 0.00390 | 1,000 | up to 1,000 | 197,282 |
+| Random Search | 2→32→32→2 | tanh | 0.000323 | 1,000 | up to 1,000 | 2,210 |
+| Baseline (Manual) | 2→5→5→5→2 | RBF | 0.001 | 5,000 | up to 1,000 | 87 |
+
+### Performance Results
+
 The study shows that Hyperband achieves:
 - 10-100x speedup compared to exhaustive search methods
 - Significant improvement in loss reduction compared to random search
