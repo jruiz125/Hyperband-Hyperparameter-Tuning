@@ -28,7 +28,7 @@ The `HyperbandSolver.jl` package is currently **in development process** and doe
 
 ## Lotka-Volterra Case Study
 
-This repository demonstrates the Hyperband method through a comprehensive analysis of the Lotka-Volterra predator-prey system, starting from the [SciML Book: Universal Differential Equations tutorial](https://book.sciml.ai/notes/15-Mixing_Differential_Equations_and_Neural_Networks_for_Physics-Informed_Learning/). The implementation includes:
+This repository demonstrates the Hyperband method through a comprehensive analysis of the Lotka-Volterra predator-prey system, starting from the [SciML Showcase: Automatically Discover Missing Physics](https://docs.sciml.ai/Overview/stable/showcase/missing_physics/). The implementation includes:
 
 - **Analysis file**: `src/solvers/hyperband_Lotka-Volterra.jl` - Contains the complete comparison between Hyperband and Random Search methods
 - **Optimal model**: `src/solvers/hyperband_Lotka-Volterra_optimal9.jl` - Contains the best configuration found during hyperparameter tuning and final model training
@@ -155,7 +155,7 @@ This example:
 
 ### Lotka-Volterra System
 
-The predator-prey dynamics example shows comprehensive UDE application to nonlinear systems, based on the [SciML Book: Universal Differential Equations tutorial](https://book.sciml.ai/notes/15-Mixing_Differential_Equations_and_Neural_Networks_for_Physics-Informed_Learning/):
+The predator-prey dynamics example shows comprehensive UDE application to nonlinear systems, based on the [SciML Showcase: Automatically Discover Missing Physics](https://docs.sciml.ai/Overview/stable/showcase/missing_physics/):
 
 **Analysis and Comparison (`src/solvers/hyperband_Lotka-Volterra.jl`)**:
 ```julia
@@ -344,4 +344,4 @@ If you use this code in your research, please cite:
 
 - Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A., & Talwalkar, A. (2016). Hyperband: A novel bandit-based approach to hyperparameter optimization. *Journal of Machine Learning Research*, 18(185), 1-52. [arXiv:1603.06560](https://arxiv.org/abs/1603.06560)
 - Rackauckas, C., et al. (2020). Universal differential equations for scientific machine learning. *arXiv preprint arXiv:2001.04385*.
-- SciML Book - Universal Differential Equations: https://book.sciml.ai/notes/15-Mixing_Differential_Equations_and_Neural_Networks_for_Physics-Informed_Learning/
+- SciML Showcase - Automatically Discover Missing Physics: https://docs.sciml.ai/Overview/stable/showcase/missing_physics/
