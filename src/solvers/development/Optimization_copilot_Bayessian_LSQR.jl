@@ -12,6 +12,7 @@
 include("../../utils/project_utils.jl")
 project_root = setup_project_environment(activate_env = true, instantiate = false)
 
+using Dates
 timestamp = Dates.format(now(), "yyyy-mm-dd_HHMMSS")
 # Create output directories
 plots_dir = joinpath(project_root, "src", "Data", "Hyper_optim", timestamp)
@@ -110,7 +111,7 @@ gr()
 # Load your UDE setup (using code from your file)
 println("Loading dataset and setting up UDE...")
 
-filename_DataSet = joinpath(project_root, "dataset", "LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_mode2_train_085.mat")
+filename_DataSet = joinpath(project_root, "dataset", "LearnigData_Rod_Clamp_Pin_Rot_X02_Y00_72sols_mode2.mat")
 println("Loading dataset from: ", filename_DataSet)
 
 if !isfile(filename_DataSet)
@@ -118,7 +119,7 @@ if !isfile(filename_DataSet)
 end
 
 mf_DataSet = MatFile(filename_DataSet)
-data_DataSet = get_mvariable(mf_DataSet, "DataSet_train")
+data_DataSet = get_mvariable(mf_DataSet, "DataSet_temp")
 DataSet = jarray(data_DataSet)
 
 # Dynamically determine the number of trajectories
@@ -615,8 +616,8 @@ function hyperband_for_strategy(strategy_fn, hyperspace, strategy_name;
     
     for s in s_max:-1:0
         println("\nBracket s = $s")
-        n = ceil(Int, B / R / (s + 1) * η^s / (η^s))
-        r = R * η^(-s)
+        n = ceil(Int, B / R / (s + 1) * η^(s * 1.0) / (η^(s * 1.0)))
+        r = R * η^(-s * 1.0)
         
         println("Initial configs: n = $n, initial resource: r = $r")
         
@@ -642,8 +643,8 @@ function hyperband_for_strategy(strategy_fn, hyperspace, strategy_name;
         
         # Successive halving
         for i in 0:s
-            n_i = floor(Int, n * η^(-i))
-            r_i = floor(Int, r * η^i)
+            n_i = floor(Int, n * η^(-i * 1.0))
+            r_i = floor(Int, r * η^(i * 1.0))
             
             println("  Round $i: evaluating $(min(n_i, length(configs))) configs with resource $r_i")
             
@@ -710,6 +711,8 @@ hyperspace_strategy2 = [
     :lsqr_lambda => ("log", "1e-8:1e-3"),
     :lsqr_alpha => (0.1, 1.0)
 ]
+
+
 
 hyperspace_strategy3 = [
     :use_de => [true, false],
