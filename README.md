@@ -332,10 +332,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 If you use this code in your research, please cite:
 
 ```bibtex
-@software{hyperband_ude_2024,
+@software{hyperband_ude_2025,
   title={Hyperband Hyperparameter Tuning for Universal Differential Equations},
-  author={Jose Ruiz},
-  year={2024},
+  author={José Luis Ruiz-Erezuma},
+  year={2025},
   url={https://github.com/jruiz125/Hyperband-Hyperparameter-Tuning}
 }
 ```
