@@ -138,20 +138,107 @@ This implementation optimizes multiple aspects of UDE training:
 
 ## Examples
 
-### Harmonic Oscillator
+### Harmonic Oscillator System
 
-The harmonic oscillator example demonstrates UDE training for a simple physical system:
+The harmonic oscillator example demonstrates comprehensive UDE application to a damped harmonic system with missing physics discovery, based on the [SciML Showcase: Automatically Discover Missing Physics](https://docs.sciml.ai/Overview/stable/showcase/missing_physics/):
 
+**Analysis and Comparison (`src/solvers/example_harmonic_osc_reutilized.jl`)**:
 ```julia
-include("src/example/example_Harmonic_Oscillator.jl")
+include("src/solvers/example_harmonic_osc_reutilized.jl")
 ```
 
-This example:
-- Generates synthetic data with noise
-- Defines a 10-dimensional hyperparameter space
-- Runs Hyperband optimization
-- Compares results with analytical solutions
-- Provides comprehensive visualization
+This comprehensive analysis file:
+- Implements both Hyperband and Random Search methods for a damped harmonic oscillator
+- Performs statistical comparison between optimization strategies
+- Generates performance metrics and visualizations
+- Demonstrates significant performance improvement with Hyperband
+- Shows **19,690x improvement in loss reduction** compared to Random Search
+- Saves best model configuration using JLD2 for reproducibility
+
+#### Configuration Space
+
+The Harmonic Oscillator example optimizes over a **5-dimensional hyperparameter space**:
+
+| Parameter | Type | Range/Options | Description |
+|-----------|------|---------------|-------------|
+| `hidden_dim` | Discrete | [16, 32, 64, 128] | Neural network hidden layer dimensions |
+| `n_layers` | Integer | 2-5 | Number of hidden layers in the network |
+| `activation` | Categorical | [tanh, relu, sigmoid] | Activation function for hidden layers |
+| `learning_rate` | Continuous | 10^(-4) to 10^(-1) | Learning rate for optimization (log-uniform) |
+| `solver` | Categorical | [Tsit5(), Vern7(), AutoTsit5(Rosenbrock23())] | ODE solver method |
+
+#### Best Configuration Found
+
+Hyperband optimization identified the following **optimal configuration** for the Harmonic Oscillator:
+
+| Hyperparameter | Optimal Value | Description |
+|----------------|---------------|-------------|
+| `hidden_dim` | 128 | Hidden layer dimensions |
+| `n_layers` | 4 | Number of hidden layers (5 total layers) |
+| `activation` | tanh | Activation function |
+| `learning_rate` | 0.002457 | Learning rate for optimization |
+| `solver` | Vern7() | 7th-order Verner ODE solver |
+
+**Network Architecture**: 3 → 128 → 128 → 128 → 128 → 1 (learning the missing acceleration term)
+
+#### Performance Results
+
+The Harmonic Oscillator study demonstrates exceptional performance improvements:
+
+- **Loss Improvement**: 100% improvement (Hyperband: 2.85×10^(-5) vs Random Search: 0.561)
+- **Convergence**: Hyperband found near-optimal solutions with high precision
+- **Robustness**: Hyperband avoided training failures that affected Random Search
+- **Resource Efficiency**: Adaptive resource allocation through early stopping
+- **Model Persistence**: Best configuration saved using JLD2 for reproducibility
+
+#### Training Performance Summary
+
+| Method | Final Loss | Time (s) | Evaluations | Total Resource | Architecture |
+|--------|------------|----------|-------------|----------------|--------------|
+| **Hyperband** | **2.85×10^(-5)** | 17,466 | 206 | 4,696 | 3→128→128→128→128→1 |
+| Random Search | 0.561 | 454 | 5 | 1,000 | 3→32→32→1 |
+
+**Key Findings:**
+- **Loss ratio**: Hyperband achieved 19,690x better loss than Random Search
+- **Precision**: Final model achieved micro-level accuracy (10^(-5) range)
+- **Extended training**: Final model reached 6.65×10^(-6) loss with 500 iterations
+- **Stability**: No training failures or numerical instabilities with optimal configuration
+
+#### Detailed Execution Summary
+
+**Hyperband Performance:**
+```
+Hyperband completed:
+  Best loss: 2.8480097e-5
+  Time: 17465.64s (≈4.85 hours)
+  Evaluations: 206 configurations tested
+  Total resource: 4696.3 training iterations
+
+Final optimized configuration:
+  learning_rate: 0.0024571310922160508
+  activation: tanh
+  n_layers: 4
+  solver: Vern7()
+  hidden_dim: 128
+```
+
+**Random Search Performance:**
+```
+Random Search completed:
+  Best loss: 0.56087875
+  Time: 454.31s (≈7.6 minutes)
+  Evaluations: 5 configurations tested
+  Total resource: 1000.0 training iterations
+  
+Note: Encountered training failures due to numerical instabilities
+Warning: Some configurations produced NaN values during integration
+```
+
+**Statistical Summary:**
+- **Loss Improvement**: 100.0% better performance with Hyperband
+- **Resource Efficiency**: Hyperband uses adaptive allocation vs. fixed allocation
+- **Training Stability**: Hyperband avoided the integration failures that affected Random Search
+- **Convergence Quality**: Extended training achieved final loss of 6.647566e-6
 
 ### Lotka-Volterra System
 

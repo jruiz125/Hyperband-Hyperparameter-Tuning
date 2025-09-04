@@ -6,6 +6,8 @@ using Plots
 using Statistics, Random
 using DataFrames
 using BenchmarkTools
+using JLD2
+using Dates
 
 # Include the Hyperband implementation
 include("hypersolver.jl")
@@ -461,3 +463,317 @@ results = run_comparison_experiment(1)  # Reduced runs for speed
     end
 
     display(comparison)
+#=
+
+    # -----------------------------------------------------------------------------
+    # Save Best Hyperband Configuration using JLD2
+    # -----------------------------------------------------------------------------
+
+        println("\n" * "="^60)
+        println("SAVING BEST HYPERBAND CONFIGURATION")
+        println("="^60)
+
+        # Get the best Hyperband model components
+        best_config = hb_best.config
+        
+        # Recreate the best model to get final trained parameters
+        prob_best, nn_best, p_best_init, st_best = create_ude_model(best_config)
+        
+        # Train the final model with extended iterations for optimal performance
+        println("Training final best model...")
+        final_loss_best = train_ude_model(best_config, 500.0)
+        
+        # Save the complete model state
+        model_save_data = Dict(
+            # Model architecture and configuration
+            "config" => best_config,
+            "neural_network" => nn_best,
+            "initial_parameters" => p_best_init,
+            "model_state" => st_best,
+            
+            # Training results
+            "best_loss" => hb_best.loss,
+            "final_extended_loss" => final_loss_best,
+            
+            # Performance metrics
+            "hyperband_time" => hb_best.time,
+            "hyperband_evaluations" => eval_count[],
+            "hyperband_resource_used" => total_resource_used[],
+            
+            # Problem setup
+            "problem_setup" => Dict(
+                "u0" => u0,
+                "tspan" => tspan,
+                "true_parameters" => p_,
+                "training_times" => collect(t),
+                "noisy_data" => Xₙ
+            ),
+            
+            # Comparison results
+            "comparison_stats" => stats,
+            "random_search_best" => rs_best,
+            
+            # Metadata
+            "timestamp" => string(now()),
+            "julia_version" => string(VERSION),
+            "description" => "Best Hyperband configuration for Harmonic Oscillator UDE"
+        )
+        
+        # Save to JLD2 file
+        save_filename = "hyperband_harmonic_oscillator_best_model.jld2"
+        @save save_filename model_save_data
+        
+        println("Model saved to: $save_filename")
+        println("Saved components:")
+        println("  ✓ Neural network architecture and configuration")
+        println("  ✓ Trained model parameters and states")
+        println("  ✓ Training results and performance metrics")
+        println("  ✓ Problem setup and training data")
+        println("  ✓ Comparison statistics")
+        
+        # Verification: Load and display basic info
+        loaded_data = load(save_filename)["model_save_data"]
+        println("\nVerification - Loaded model info:")
+        println("  Best loss: $(loaded_data["best_loss"])")
+        println("  Configuration: $(loaded_data["config"])")
+        println("  Timestamp: $(loaded_data["timestamp"])")
+
+    # -----------------------------------------------------------------------------
+    # Comprehensive Analysis: NN vs Analytical Solution
+    # -----------------------------------------------------------------------------
+
+    println("\n" * "="^60)
+    println("COMPREHENSIVE ANALYSIS: NN vs ANALYTICAL SOLUTION")
+    println("="^60)
+
+    # Define analytical solution for damped harmonic oscillator
+    function analytical_solution(t, u0, p)
+        ω, ζ = p  # natural frequency, damping ratio
+        x0, v0 = u0
+        
+        if ζ < 1.0  # Underdamped case
+            ωd = ω * sqrt(1 - ζ^2)  # damped frequency
+            A = x0
+            B = (v0 + ζ*ω*x0) / ωd
+            
+            x_analytical = exp.(-ζ*ω*t) .* (A*cos.(ωd*t) + B*sin.(ωd*t))
+            v_analytical = exp.(-ζ*ω*t) .* ((-ζ*ω*A - ωd*B)*cos.(ωd*t) + (-ζ*ω*B + ωd*A)*sin.(ωd*t))
+        elseif ζ == 1.0  # Critically damped
+            A = x0
+            B = v0 + ω*x0
+            
+            x_analytical = exp.(-ω*t) .* (A .+ B*t)
+            v_analytical = exp.(-ω*t) .* (B - ω*(A .+ B*t))
+        else  # Overdamped
+            r1 = -ω*(ζ + sqrt(ζ^2 - 1))
+            r2 = -ω*(ζ - sqrt(ζ^2 - 1))
+            A = (v0 - r2*x0) / (r1 - r2)
+            B = x0 - A
+            
+            x_analytical = A*exp.(r1*t) + B*exp.(r2*t)
+            v_analytical = A*r1*exp.(r1*t) + B*r2*exp.(r2*t)
+        end
+        
+        return [x_analytical'; v_analytical']
+    end
+
+    # Create extended time series for comprehensive analysis
+    t_extended = range(0.0f0, 8.0f0, length=200)
+    t_train = collect(t)
+    t_extrap = t_extended[t_extended .> maximum(t)]
+
+    # Get analytical solutions
+    X_analytical_train = analytical_solution(t_train, u0, p_)
+    X_analytical_extended = analytical_solution(t_extended, u0, p_)
+
+    # Get best model predictions
+    best_config = hb_best.config
+    prob_best, nn_best, p_final, st_best = create_ude_model(best_config)
+
+    # Train final model to get best parameters
+    final_loss = train_ude_model(best_config, 500.0)
+
+    # Create prediction function with trained model
+    function predict_best_model(θ, time_span, time_points)
+        _prob = remake(prob_best, p=θ, tspan=(time_span[1], time_span[end]))
+        sol = solve(_prob, best_config[:solver], saveat=time_points, 
+                    abstol=1e-8, reltol=1e-6)
+        return Array(sol)
+    end
+
+    # Get predictions for different time ranges
+    X_pred_train = predict_best_model(p_final, (t_train[1], t_train[end]), t_train)
+    X_pred_extended = predict_best_model(p_final, (t_extended[1], t_extended[end]), t_extended)
+
+    # Calculate L2-norm errors
+    l2_error_train = sqrt.(mean((X_pred_train - X_analytical_train).^2, dims=2))
+    l2_error_extended = sqrt.(mean((X_pred_extended - X_analytical_extended).^2, dims=2))
+
+    println("L2-norm errors:")
+    println("  Position (training): $(l2_error_train[1])")
+    println("  Velocity (training): $(l2_error_train[2])")
+    println("  Position (extended): $(l2_error_extended[1])")
+    println("  Velocity (extended): $(l2_error_extended[2])")
+
+    # Calculate point-wise errors for plotting
+    error_position = abs.(X_pred_extended[1,:] - X_analytical_extended[1,:])
+    error_velocity = abs.(X_pred_extended[2,:] - X_analytical_extended[2,:])
+
+    # Create comprehensive comparison plots
+    println("\nGenerating comprehensive comparison plots...")
+
+    # Plot 1: Population Dynamics Comparison
+    p1 = plot(layout=(1,2), size=(1200, 400), margin=5Plots.mm)
+
+    plot!(p1[1], t_extended, X_analytical_extended[1,:], 
+        label="True Position", color=:black, linewidth=2)
+    plot!(p1[1], t_extended, X_pred_extended[1,:], 
+        label="Hyperband Prediction", color=:blue, linewidth=2, linestyle=:dash)
+    plot!(p1[1], t_train, Xₙ[1,:], 
+        seriestype=:scatter, label="Training Data", color=:red, markersize=3)
+    vline!(p1[1], [maximum(t_train)], color=:orange, linestyle=:dash, linewidth=2, 
+        label="Training/Extrapolation")
+    title!(p1[1], "Position Dynamics Comparison")
+    xlabel!(p1[1], "Time")
+    ylabel!(p1[1], "Position")
+
+    plot!(p1[2], t_extended, X_analytical_extended[2,:], 
+        label="True Velocity", color=:black, linewidth=2)
+    plot!(p1[2], t_extended, X_pred_extended[2,:], 
+        label="Hyperband Prediction", color=:blue, linewidth=2, linestyle=:dash)
+    plot!(p1[2], t_train, Xₙ[2,:], 
+        seriestype=:scatter, label="Training Data", color=:red, markersize=3)
+    vline!(p1[2], [maximum(t_train)], color=:orange, linestyle=:dash, linewidth=2, 
+        label="Training/Extrapolation")
+    title!(p1[2], "Velocity Dynamics Comparison")
+    xlabel!(p1[2], "Time")
+    ylabel!(p1[2], "Velocity")
+
+    # Plot 2: Phase Portrait Comparison
+    p2 = plot(size=(600, 600), margin=5Plots.mm)
+    plot!(p2, X_analytical_extended[1,:], X_analytical_extended[2,:], 
+        label="Ground Truth", color=:black, linewidth=3)
+    plot!(p2, X_pred_extended[1,:], X_pred_extended[2,:], 
+        label="Hyperband", color=:blue, linewidth=2, linestyle=:dash)
+    scatter!(p2, [u0[1]], [u0[2]], label="Initial Condition", 
+            color=:green, markersize=8, markershape=:star)
+    title!(p2, "Phase Portrait Comparison")
+    xlabel!(p2, "Position")
+    ylabel!(p2, "Velocity")
+
+    # Plot 3: Training Convergence (reuse existing data)
+    p3 = plot(size=(600, 400), margin=5Plots.mm)
+    if length(losses_baseline) > 0
+        plot!(p3, 1:length(losses_baseline), losses_baseline, 
+            label="Baseline ADAM", color=:green, linewidth=2, yscale=:log10)
+    end
+    # Note: We don't have convergence data for the best model training stored
+    # This would need to be captured during the training process
+    title!(p3, "Training Convergence Comparison")
+    xlabel!(p3, "Iterations")
+    ylabel!(p3, "Loss")
+
+    # Plot 4: Prediction Error Over Time
+    p4 = plot(size=(600, 400), margin=5Plots.mm)
+    plot!(p4, t_extended, error_position, 
+        label="Position Error", color=:red, linewidth=2)
+    plot!(p4, t_extended, error_velocity, 
+        label="Velocity Error", color=:blue, linewidth=2)
+    vline!(p4, [maximum(t_train)], color=:orange, linestyle=:dash, linewidth=2, 
+        label="Training/Extrapolation")
+    title!(p4, "Prediction Error Over Time")
+    xlabel!(p4, "Time")
+    ylabel!(p4, "L2 Error")
+    yscale!(p4, :log10)
+
+    # Plot 5: Missing Physics Recovery - Neural Network Output
+    p5 = plot(layout=(1,2), size=(1200, 400), margin=5Plots.mm)
+
+    # Calculate what the network is learning (the missing acceleration term)
+    function nn_output(u, p, t)
+        return nn_best([u[1], u[2], t], p, st_best)[1][1]
+    end
+
+    # Calculate true missing term and NN prediction
+    nn_predictions = []
+    true_missing = []
+    for i in 1:length(t_extended)
+        u_curr = [X_analytical_extended[1,i], X_analytical_extended[2,i]]
+        nn_pred = nn_output(u_curr, p_final, t_extended[i])
+        
+        # True acceleration from harmonic oscillator
+        ω, ζ = p_
+        true_acc = -2ζ*ω*u_curr[2] - ω^2*u_curr[1]
+        
+        push!(nn_predictions, nn_pred)
+        push!(true_missing, true_acc)
+    end
+
+    plot!(p5[1], t_extended, true_missing, 
+        label="True Acceleration", color=:black, linewidth=2)
+    plot!(p5[1], t_extended, nn_predictions, 
+        label="NN Prediction", color=:blue, linewidth=2, linestyle=:dash)
+    vline!(p5[1], [maximum(t_train)], color=:orange, linestyle=:dash, linewidth=2, 
+        label="Training/Extrapolation")
+    title!(p5[1], "Missing Physics Recovery (Acceleration)")
+    xlabel!(p5[1], "Time")
+    ylabel!(p5[1], "Acceleration")
+
+    # Error in missing physics recovery
+    missing_error = abs.(nn_predictions - true_missing)
+    plot!(p5[2], t_extended, missing_error, 
+        label="NN Recovery Error", color=:red, linewidth=2)
+    vline!(p5[2], [maximum(t_train)], color=:orange, linestyle=:dash, linewidth=2, 
+        label="Training/Extrapolation")
+    title!(p5[2], "Missing Physics Recovery Error")
+    xlabel!(p5[2], "Time")
+    ylabel!(p5[2], "Error")
+    yscale!(p5[2], :log10)
+
+    # Combine all plots
+    final_plot = plot(p1, p2, p3, p4, p5, 
+                    layout=@layout([a{0.4h}; b{0.3h} c{0.3h}; d{0.3h} e{0.3h}]), 
+                    size=(1200, 1000))
+
+    display(final_plot)
+    savefig(final_plot, "harmonic_oscillator_comprehensive_analysis.png")
+
+    # Save detailed analysis results
+    analysis_results = Dict(
+        "l2_errors" => Dict(
+            "position_training" => l2_error_train[1],
+            "velocity_training" => l2_error_train[2],
+            "position_extended" => l2_error_extended[1],
+            "velocity_extended" => l2_error_extended[2]
+        ),
+        "time_series" => Dict(
+            "t_extended" => t_extended,
+            "analytical_solution" => X_analytical_extended,
+            "nn_prediction" => X_pred_extended,
+            "training_data" => Xₙ,
+            "training_times" => t_train
+        ),
+        "missing_physics" => Dict(
+            "true_acceleration" => true_missing,
+            "nn_acceleration" => nn_predictions,
+            "recovery_error" => missing_error
+        )
+    )
+
+    @save "harmonic_oscillator_analysis_results.jld2" analysis_results
+
+    println("Comprehensive analysis completed!")
+    println("  ✓ L2-norm errors calculated and displayed")
+    println("  ✓ Phase portrait comparison generated")
+    println("  ✓ Prediction vs analytical solution plotted")
+    println("  ✓ Missing physics recovery analyzed")
+    println("  ✓ Results saved to: harmonic_oscillator_comprehensive_analysis.png")
+    println("  ✓ Analysis data saved to: harmonic_oscillator_analysis_results.jld2")
+
+    println("\n" * "="^60)
+    println("HARMONIC OSCILLATOR HYPERBAND OPTIMIZATION COMPLETED")
+    println("="^60)
+    println("Best model and configuration saved successfully!")
+    println("Results available in: hyperband_vs_random_harmonic.png")
+    println("Model saved to: $save_filename")
+    =#
