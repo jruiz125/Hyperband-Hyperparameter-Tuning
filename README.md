@@ -140,7 +140,7 @@ This implementation optimizes multiple aspects of UDE training:
 
 ### Harmonic Oscillator System
 
-The harmonic oscillator example demonstrates comprehensive UDE application to a damped harmonic system with missing physics discovery, based on the [SciML Showcase: Automatically Discover Missing Physics](https://docs.sciml.ai/Overview/stable/showcase/missing_physics/):
+The harmonic oscillator example demonstrates comprehensive UDE application to a damped harmonic system with missing physics discovery.
 
 **Analysis and Comparison (`src/solvers/example_harmonic_osc_reutilized.jl`)**:
 ```julia
@@ -206,39 +206,100 @@ The Harmonic Oscillator study demonstrates exceptional performance improvements:
 
 #### Detailed Execution Summary
 
-**Hyperband Performance:**
+**Hyperband Optimization Process:**
 ```
 Hyperband completed:
-  Best loss: 2.8480097e-5
-  Time: 17465.64s (≈4.85 hours)
-  Evaluations: 206 configurations tested
-  Total resource: 4696.3 training iterations
+Best loss: 2.8480097e-5
+Time: 17465.64s
+Evaluations: 206
+Total resource: 4696.296296296292
+```
 
-Final optimized configuration:
+**Random Search Execution with Training Issues:**
+```
+Random Search completed:
+Best loss: 0.56087875
+Time: 454.31s
+Evaluations: 5
+Total resource: 1000.0
+```
+
+**Statistical Performance Comparison:**
+```
+============================================================
+STATISTICAL SUMMARY
+2×8 DataFrame
+Row │ Method        Mean_Loss    Std_Loss  Min_Loss     Mean_Time  Std_Time  Mean_Evals  Mean_Resource
+    │ String        Float64      Float64   Float64      Float64    Float64   Float64     Float64      
+────┼──────────────────────────────────────────────────────────────────────────────────────────────────
+1   │ Hyperband     2.84801e-5   NaN       2.84801e-5   17465.6    NaN       206.0       4696.3       
+2   │ Random Search 0.560879     NaN       0.560879     454.314    NaN       5.0         1000.0       
+
+============================================================
+PERFORMANCE COMPARISON
+Hyperband vs Random Search:
+Time Speedup: 0.03x faster
+Loss Improvement: 100.0%
+Resource Efficiency: Hyperband uses adaptive allocation
+```
+
+**Best Configuration Found by Hyperband:**
+```
+============================================================
+BEST HYPERBAND CONFIGURATION
+learning_rate: 0.0024571310922160508
+activation: tanh
+n_layers: 4
+solver: Vern7{typeof(OrdinaryDiffEqCore.trivial_limiter!), typeof(OrdinaryDiffEqCore.trivial_limiter!), Static.False}
+hidden_dim: 128
+```
+
+**Extended Training with Best Configuration:**
+```
+Training final model with best configuration...
+
+Final model loss after extended training: 6.647566e-6
+```
+
+**Optimal Hyperparameters Comparison:**
+```
+============================================================
+OPTIMAL HYPERPARAMETERS FOUND
+🏆 HYPERBAND BEST CONFIGURATION:
+Final Loss: 2.8480097e-5
+Hyperparameters:
   learning_rate: 0.0024571310922160508
   activation: tanh
   n_layers: 4
-  solver: Vern7()
+  solver: Vern7{typeof(OrdinaryDiffEqCore.trivial_limiter!), typeof(OrdinaryDiffEqCore.trivial_limiter!), Static.False}
   hidden_dim: 128
+
+🎲 RANDOM SEARCH BEST CONFIGURATION:
+Final Loss: 0.56087875
+Hyperparameters:
+  learning_rate: 0.00032273776932288683
+  activation: tanh
+  n_layers: 2
+  solver: Vern7{typeof(OrdinaryDiffEqCore.trivial_limiter!), typeof(OrdinaryDiffEqCore.trivial_limiter!), Static.False}
+  hidden_dim: 32
+
+5×3 DataFrame
+Row │ Parameter      Hyperband         Random_Search    
+    │ String         Any              Any              
+────┼──────────────────────────────────────────────────
+1   │ learning_rate  0.00245713       0.000322738      
+2   │ activation     tanh             tanh             
+3   │ n_layers       4                2                
+4   │ solver         Vern7{typeof...  Vern7{typeof...  
+5   │ hidden_dim     128              32               
 ```
 
-**Random Search Performance:**
-```
-Random Search completed:
-  Best loss: 0.56087875
-  Time: 454.31s (≈7.6 minutes)
-  Evaluations: 5 configurations tested
-  Total resource: 1000.0 training iterations
-  
-Note: Encountered training failures due to numerical instabilities
-Warning: Some configurations produced NaN values during integration
-```
-
-**Statistical Summary:**
-- **Loss Improvement**: 100.0% better performance with Hyperband
-- **Resource Efficiency**: Hyperband uses adaptive allocation vs. fixed allocation
-- **Training Stability**: Hyperband avoided the integration failures that affected Random Search
-- **Convergence Quality**: Extended training achieved final loss of 6.647566e-6
+**Key Performance Insights:**
+- **Numerical Stability**: Hyperband's configuration avoided the integration failures that plagued Random Search
+- **Loss Achievement**: Final loss of 6.647566e-6 represents exceptional precision for the harmonic oscillator
+- **Resource Allocation**: Hyperband's adaptive strategy (4,696 resources) vs Random Search's fixed allocation (1,000 resources)
+- **Configuration Quality**: Larger network (128 hidden dimensions, 4 layers) vs smaller network (32 dimensions, 2 layers)
+- **Training Robustness**: No NaN errors or domain violations in the optimal Hyperband configuration
 
 ### Lotka-Volterra System
 
